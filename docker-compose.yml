@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: nuvonode-postgres
+    environment:
+      POSTGRES_USER: nuvonode
+      POSTGRES_PASSWORD: nuvonode
+      POSTGRES_DB: nuvonode
+    ports:
+      - "5432:5432"
+    volumes:
+      - nuvonode_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nuvonode -d nuvonode"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: nuvonode-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - nuvonode_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  nuvonode_postgres:
+  nuvonode_redis:

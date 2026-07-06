@@ -1,0 +1,16 @@
+DROP TABLE IF EXISTS audit_log;
+DROP TABLE IF EXISTS external_model_connectors;
+DROP TABLE IF EXISTS provider_stats;
+DROP TABLE IF EXISTS usage_records;
+DROP TABLE IF EXISTS inference_jobs;
+DROP TABLE IF EXISTS provider_model_advertisements;
+DROP TABLE IF EXISTS provider_hardware_reports;
+DROP TABLE IF EXISTS provider_instances;
+DROP TABLE IF EXISTS providers;
+DROP TABLE IF EXISTS model_versions;
+DROP TABLE IF EXISTS models;
+DROP TABLE IF EXISTS wallet_ledger;
+DROP TABLE IF EXISTS wallets;
+DROP TABLE IF EXISTS api_keys;
+DROP TABLE IF EXISTS projects;
+DROP TABLE IF EXISTS users;

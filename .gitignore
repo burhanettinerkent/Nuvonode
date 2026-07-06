@@ -1,0 +1,26 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
+dist/
+build/
+coverage/
+*.log
+.DS_Store
+bin/
+.tmp/
+__debug_bin
+
+# local agent/session state
+.claude/
+PROJECT_STATE.md
+CLAUDE.md
+docs/prompts/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# local provider config if copied into repo
+.nuvonode-provider/

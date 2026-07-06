@@ -1,0 +1,11 @@
+server_url: "http://localhost:8080"
+provider_token: "pvn_provider_replace_me"
+provider_name: "Home GPU"
+instance_key: "auto-generated"
+ollama_url: "http://localhost:11434"
+allow_auto_model_pull: false
+max_concurrent_jobs: 1
+heartbeat_interval_seconds: 15
+log_level: "info"
+allowed_model_slugs:
+  - "qwen-7b-instruct"
