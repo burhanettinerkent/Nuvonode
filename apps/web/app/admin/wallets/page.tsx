@@ -20,6 +20,7 @@ export default function AdminWalletsPage() {
     setError(null);
     setResult(null);
     try {
+      if (!confirm(`Adjust wallet ${userID} by ${amount} credits?`)) return;
       const res = await adjustAdminWallet(userID, Number(amount), reason);
       setResult(res);
       setAmount("");

@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { Shell } from "@/components/Shell";
-import { Empty, ErrorMessage, Loading } from "@/components/State";
+import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { approveProviderModel, listPendingProviderModels, rejectProviderModel, type ProviderModelAdvertisement } from "@/lib/api";
 
 export default function AdminProviderModelsPage() {
   const [ads, setAds] = useState<ProviderModelAdvertisement[]>([]);
   const [error, setError] = useState<unknown>(null);
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
 
   function load() {
@@ -21,11 +22,14 @@ export default function AdminProviderModelsPage() {
   useEffect(load, []);
 
   async function act(id: string, action: "approve" | "reject") {
+    if (action === "reject" && !confirm("Reject this provider model advertisement?")) return;
     setError(null);
+    setSuccess("");
     try {
       if (action === "approve") await approveProviderModel(id);
       if (action === "reject") await rejectProviderModel(id);
       setAds((items) => items.filter((item) => item.id !== id));
+      setSuccess(action === "approve" ? "Provider model approved." : "Provider model rejected.");
     } catch (err) {
       setError(err);
     }
@@ -36,6 +40,7 @@ export default function AdminProviderModelsPage() {
       <div className="stack">
         <h1>Pending Provider Models</h1>
         {error ? <ErrorMessage error={error} /> : null}
+        {success ? <SuccessMessage message={success} /> : null}
         {loading ? <Loading /> : null}
         {!loading && ads.length === 0 ? <Empty label="No pending provider model advertisements." /> : null}
         {ads.length > 0 ? (

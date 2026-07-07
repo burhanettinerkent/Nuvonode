@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { Shell } from "@/components/Shell";
-import { Empty, ErrorMessage, Loading } from "@/components/State";
+import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { createAdminModel, listAdminModels, pauseAdminModel, updateAdminModel, type Model } from "@/lib/api";
 
 export default function AdminModelsPage() {
@@ -14,6 +14,7 @@ export default function AdminModelsPage() {
   const [editingID, setEditingID] = useState("");
   const [editingStatus, setEditingStatus] = useState("active");
   const [error, setError] = useState<unknown>(null);
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -31,6 +32,7 @@ export default function AdminModelsPage() {
     event.preventDefault();
     setSaving(true);
     setError(null);
+    setSuccess("");
     try {
       const res = await createAdminModel({ slug, display_name: displayName, family, status, community_allowed: true });
       setModels((items) => [res.model, ...items]);
@@ -38,6 +40,7 @@ export default function AdminModelsPage() {
       setDisplayName("");
       setFamily("");
       setStatus("active");
+      setSuccess("Model created.");
     } catch (err) {
       setError(err);
     } finally {
@@ -48,20 +51,25 @@ export default function AdminModelsPage() {
   async function saveStatus() {
     if (!editingID) return;
     setError(null);
+    setSuccess("");
     try {
       const res = await updateAdminModel(editingID, { status: editingStatus });
       setModels((items) => items.map((item) => item.id === editingID ? res.model : item));
       setEditingID("");
+      setSuccess("Model status updated.");
     } catch (err) {
       setError(err);
     }
   }
 
   async function pause(id: string) {
+    if (!confirm("Pause this model? New routing for this model will stop.")) return;
     setError(null);
+    setSuccess("");
     try {
       await pauseAdminModel(id);
       setModels((items) => items.map((item) => item.id === id ? { ...item, status: "paused" } : item));
+      setSuccess("Model paused.");
     } catch (err) {
       setError(err);
     }
@@ -96,6 +104,7 @@ export default function AdminModelsPage() {
           <button className="button secondary" disabled={!editingID} type="button" onClick={saveStatus}>Update status</button>
         </div>
         {error ? <ErrorMessage error={error} /> : null}
+        {success ? <SuccessMessage message={success} /> : null}
         {loading ? <Loading /> : null}
         {!loading && models.length === 0 ? <Empty label="No models." /> : null}
         {models.length > 0 ? (

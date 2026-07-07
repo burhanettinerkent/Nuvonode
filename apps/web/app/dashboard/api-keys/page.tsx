@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { CopyBox } from "@/components/CopyBox";
 import { Shell } from "@/components/Shell";
-import { Empty, ErrorMessage, Loading } from "@/components/State";
+import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { createAPIKey, listAPIKeys, listProjects, revokeAPIKey, type APIKey, type Project } from "@/lib/api";
 
 export default function APIKeysPage() {
@@ -13,6 +13,7 @@ export default function APIKeysPage() {
   const [name, setName] = useState("");
   const [plaintextKey, setPlaintextKey] = useState("");
   const [error, setError] = useState<unknown>(null);
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -42,11 +43,13 @@ export default function APIKeysPage() {
     event.preventDefault();
     setSaving(true);
     setError(null);
+    setSuccess("");
     setPlaintextKey("");
     try {
       const res = await createAPIKey(projectID, name);
       setKeys((items) => [res.api_key, ...items]);
       setPlaintextKey(res.plaintext_key);
+      setSuccess("API key created. Copy it now; it cannot be shown again.");
       setName("");
     } catch (err) {
       setError(err);
@@ -56,10 +59,13 @@ export default function APIKeysPage() {
   }
 
   async function revoke(keyID: string) {
+    if (!confirm("Revoke this API key? Existing clients using it will stop working.")) return;
     setError(null);
+    setSuccess("");
     try {
       await revokeAPIKey(projectID, keyID);
       setKeys((items) => items.map((key) => key.id === keyID ? { ...key, status: "revoked" } : key));
+      setSuccess("API key revoked.");
     } catch (err) {
       setError(err);
     }
@@ -70,6 +76,7 @@ export default function APIKeysPage() {
       <div className="stack">
         <h1>API Keys</h1>
         {error ? <ErrorMessage error={error} /> : null}
+        {success ? <SuccessMessage message={success} /> : null}
         {loading ? <Loading /> : null}
         {!loading && projects.length === 0 ? <Empty label="Create a project before creating API keys." /> : null}
         {projects.length > 0 ? (

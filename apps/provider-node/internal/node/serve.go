@@ -134,9 +134,13 @@ func sendModelList(ctx context.Context, writeJSON func(any) error, cfg config.Co
 	}
 	entries := make([]protocol.RuntimeModelEntry, 0, len(models))
 	for _, model := range models {
-		entries = append(entries, protocol.RuntimeModelEntry{RuntimeModelName: model.Name, Digest: model.Digest, SizeBytes: model.SizeBytes})
+		entries = append(entries, protocol.RuntimeModelEntry{RuntimeModelName: normalizeRuntimeModelName(model.Name), Digest: model.Digest, SizeBytes: model.SizeBytes})
 	}
 	return writeJSON(protocol.NewEnvelope("provider.model_list", protocol.ModelListPayload{Runtime: "ollama", Models: entries}))
+}
+
+func normalizeRuntimeModelName(name string) string {
+	return strings.TrimSuffix(name, ":latest")
 }
 
 func readLoop(ctx context.Context, conn *websocket.Conn, cfg config.Config, writeJSON func(any) error, errc chan<- error) {

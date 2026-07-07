@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { Shell } from "@/components/Shell";
-import { Empty, ErrorMessage, Loading } from "@/components/State";
+import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { approveProvider, disableProvider, listAdminProviders, rejectProvider, type Provider } from "@/lib/api";
 
 export default function AdminProvidersPage() {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [error, setError] = useState<unknown>(null);
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
 
   function load() {
@@ -21,11 +22,14 @@ export default function AdminProvidersPage() {
   useEffect(load, []);
 
   async function act(providerID: string, action: "approve" | "reject" | "disable") {
+    if (action !== "approve" && !confirm(`${action} this provider?`)) return;
     setError(null);
+    setSuccess("");
     try {
       if (action === "approve") await approveProvider(providerID);
       if (action === "reject") await rejectProvider(providerID);
       if (action === "disable") await disableProvider(providerID);
+      setSuccess(action === "approve" ? "Provider approved." : action === "reject" ? "Provider rejected." : "Provider disabled.");
       load();
     } catch (err) {
       setError(err);
@@ -37,6 +41,7 @@ export default function AdminProvidersPage() {
       <div className="stack">
         <h1>Admin Providers</h1>
         {error ? <ErrorMessage error={error} /> : null}
+        {success ? <SuccessMessage message={success} /> : null}
         {loading ? <Loading /> : null}
         {!loading && providers.length === 0 ? <Empty label="No providers." /> : null}
         {providers.length > 0 ? (

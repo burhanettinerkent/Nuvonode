@@ -5,7 +5,7 @@ import { CopyBox } from "@/components/CopyBox";
 import { CreditNotice } from "@/components/CreditNotice";
 import { PrivacyNotice } from "@/components/PrivacyNotice";
 import { Shell } from "@/components/Shell";
-import { Empty, ErrorMessage, Loading } from "@/components/State";
+import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { createProvider, listProviders, type Provider } from "@/lib/api";
 
 export default function ProvidersPage() {
@@ -16,6 +16,7 @@ export default function ProvidersPage() {
   const [token, setToken] = useState("");
   const [setupCommands, setSetupCommands] = useState("");
   const [error, setError] = useState<unknown>(null);
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -30,6 +31,7 @@ export default function ProvidersPage() {
     event.preventDefault();
     setSaving(true);
     setError(null);
+    setSuccess("");
     setToken("");
     setSetupCommands("");
     try {
@@ -43,6 +45,7 @@ nuvonode-provider serve`);
       setName("");
       setRegion("");
       setAllowPull(false);
+      setSuccess("Provider created. Copy the token now, then run the setup commands.");
     } catch (err) {
       setError(err);
     } finally {
@@ -73,6 +76,7 @@ nuvonode-provider serve`);
           <button className="button" disabled={saving} type="submit">{saving ? "Creating..." : "Create provider"}</button>
         </form>
         {error ? <ErrorMessage error={error} /> : null}
+        {success ? <SuccessMessage message={success} /> : null}
         {token ? <div className="notice warn stack"><strong>Copy this provider token now. It will not be shown again.</strong><CopyBox value={token} /><CopyBox value={setupCommands} /></div> : null}
         {loading ? <Loading /> : null}
         {!loading && providers.length === 0 ? <Empty label="No providers yet." /> : null}

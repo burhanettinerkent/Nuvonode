@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { Shell } from "@/components/Shell";
-import { Empty, ErrorMessage, Loading } from "@/components/State";
+import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { createProject, listProjects, type Project } from "@/lib/api";
 
 export default function ProjectsPage() {
@@ -10,6 +10,7 @@ export default function ProjectsPage() {
   const [name, setName] = useState("");
   const [limit, setLimit] = useState("");
   const [error, setError] = useState<unknown>(null);
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -27,12 +28,14 @@ export default function ProjectsPage() {
     event.preventDefault();
     setSaving(true);
     setError(null);
+    setSuccess("");
     try {
       const monthlyLimit = limit.trim() ? Number(limit) : null;
       const res = await createProject(name, monthlyLimit);
       setProjects((items) => [res.project, ...items]);
       setName("");
       setLimit("");
+      setSuccess("Project created.");
     } catch (err) {
       setError(err);
     } finally {
@@ -57,6 +60,7 @@ export default function ProjectsPage() {
           <button className="button" disabled={saving} type="submit">{saving ? "Creating..." : "Create project"}</button>
         </form>
         {error ? <ErrorMessage error={error} /> : null}
+        {success ? <SuccessMessage message={success} /> : null}
         {loading ? <Loading /> : null}
         {!loading && projects.length === 0 ? <Empty label="No projects yet." /> : null}
         {projects.length > 0 ? (

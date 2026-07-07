@@ -22,6 +22,15 @@ func TestProviderWSURL(t *testing.T) {
 	}
 }
 
+func TestNormalizeRuntimeModelName(t *testing.T) {
+	if got := normalizeRuntimeModelName("qwen-7b-instruct:latest"); got != "qwen-7b-instruct" {
+		t.Fatalf("got %q", got)
+	}
+	if got := normalizeRuntimeModelName("qwen2.5-coder:7b"); got != "qwen2.5-coder:7b" {
+		t.Fatalf("got %q", got)
+	}
+}
+
 func TestServeOnceSendsHelloModelListHeartbeat(t *testing.T) {
 	ollama := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/api/tags" {
