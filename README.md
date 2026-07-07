@@ -152,7 +152,7 @@ make migrate-down
 Default local database URL:
 
 ```txt
-postgres://nuvonode:nuvonode@localhost:5432/nuvonode?sslmode=disable
+postgres://nuvonode:nuvonode@localhost:55432/nuvonode?sslmode=disable
 ```
 
 These credentials are development-only.
@@ -168,7 +168,7 @@ Optional DB integration test example:
 
 ```bash
 NUVONODE_RUN_DB_TESTS=1 \
-DATABASE_URL='postgres://nuvonode:nuvonode@localhost:5432/nuvonode?sslmode=disable' \
+DATABASE_URL='postgres://nuvonode:nuvonode@localhost:55432/nuvonode?sslmode=disable' \
 go test ./apps/api/internal/service -run TestAdminAdjustWalletIntegration -v
 ```
 
@@ -177,13 +177,13 @@ go test ./apps/api/internal/service -run TestAdminAdjustWalletIntegration -v
 ### Health
 
 ```bash
-curl http://localhost:8080/health
+curl http://localhost:18080/health
 ```
 
 ### Register
 
 ```bash
-curl http://localhost:8080/api/auth/register \
+curl http://localhost:18080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"password123","display_name":"Test User"}'
 ```
@@ -193,7 +193,7 @@ The first user can become admin in local development when `BOOTSTRAP_FIRST_USER_
 ### Login
 
 ```bash
-curl http://localhost:8080/api/auth/login \
+curl http://localhost:18080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"password123"}'
 ```
@@ -207,7 +207,7 @@ export JWT='paste_access_token_here'
 ### Create project
 
 ```bash
-curl http://localhost:8080/api/projects \
+curl http://localhost:18080/api/projects \
   -H "Authorization: Bearer $JWT" \
   -H "Content-Type: application/json" \
   -d '{"name":"Local App","monthly_credit_limit":null}'
@@ -216,7 +216,7 @@ curl http://localhost:8080/api/projects \
 ### Create API key
 
 ```bash
-curl http://localhost:8080/api/projects/$PROJECT_ID/api-keys \
+curl http://localhost:18080/api/projects/$PROJECT_ID/api-keys \
   -H "Authorization: Bearer $JWT" \
   -H "Content-Type: application/json" \
   -d '{"name":"Local dev key"}'
@@ -231,14 +231,14 @@ export NUVONODE_API_KEY='paste_plaintext_key_here'
 ### List models
 
 ```bash
-curl http://localhost:8080/v1/models \
+curl http://localhost:18080/v1/models \
   -H "Authorization: Bearer $NUVONODE_API_KEY"
 ```
 
 ### Chat completion
 
 ```bash
-curl http://localhost:8080/v1/chat/completions \
+curl http://localhost:18080/v1/chat/completions \
   -H "Authorization: Bearer $NUVONODE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -266,7 +266,7 @@ ollama serve
 ### 2. Register provider in API
 
 ```bash
-curl http://localhost:8080/api/providers \
+curl http://localhost:18080/api/providers \
   -H "Authorization: Bearer $JWT" \
   -H "Content-Type: application/json" \
   -d '{"name":"My local GPU","region_hint":"local","allow_auto_model_pull":false}'
@@ -279,7 +279,7 @@ Copy the returned provider token once.
 ```bash
 cd apps/provider-node
 go run ./cmd/provider-node init \
-  --server http://localhost:8080 \
+  --server http://localhost:18080 \
   --token "$PROVIDER_TOKEN" \
   --name "My local GPU" \
   --ollama-url http://localhost:11434

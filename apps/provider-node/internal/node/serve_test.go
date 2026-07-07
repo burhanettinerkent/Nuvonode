@@ -13,11 +13,11 @@ import (
 )
 
 func TestProviderWSURL(t *testing.T) {
-	got, err := providerWSURL("http://localhost:8080")
+	got, err := providerWSURL("http://localhost:18080")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got != "ws://localhost:8080/api/provider/ws" {
+	if got != "ws://localhost:18080/api/provider/ws" {
 		t.Fatalf("url=%s", got)
 	}
 }

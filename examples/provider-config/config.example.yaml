@@ -1,4 +1,4 @@
-server_url: "http://localhost:8080"
+server_url: "http://localhost:18080"
 provider_token: "pvn_provider_replace_me"
 provider_name: "Home GPU"
 instance_key: "auto-generated"

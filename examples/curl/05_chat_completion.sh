@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-API=${API:-http://localhost:8080}
+API=${API:-http://localhost:18080}
 KEY=$(cat /tmp/nuvonode_api_key.txt)
 
 curl -sS "$API/v1/chat/completions" \
@@ -12,4 +12,4 @@ curl -sS "$API/v1/chat/completions" \
     "max_tokens":128,
     "temperature":0.7,
     "stream":false
-  }' | jq .
+  }' | python -m json.tool

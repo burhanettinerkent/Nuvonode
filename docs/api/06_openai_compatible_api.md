@@ -5,7 +5,7 @@
 Local:
 
 ```txt
-http://localhost:8080/v1
+http://localhost:18080/v1
 ```
 
 Production example:
@@ -149,7 +149,7 @@ All errors:
 ## Curl example
 
 ```bash
-curl http://localhost:8080/v1/chat/completions \
+curl http://localhost:18080/v1/chat/completions \
   -H "Authorization: Bearer $NUVONODE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

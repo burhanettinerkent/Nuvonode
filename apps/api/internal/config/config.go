@@ -31,11 +31,11 @@ type Config struct {
 func Load() Config {
 	return Config{
 		AppEnv:                      env("APP_ENV", "development"),
-		HTTPAddr:                    env("HTTP_ADDR", ":8080"),
-		PublicAPIBaseURL:            env("PUBLIC_API_BASE_URL", "http://localhost:8080"),
-		PublicWebBaseURL:            env("PUBLIC_WEB_BASE_URL", "http://localhost:3000"),
-		DatabaseURL:                 env("DATABASE_URL", "postgres://nuvonode:nuvonode@localhost:5432/nuvonode?sslmode=disable"),
-		RedisURL:                    env("REDIS_URL", "redis://localhost:6379/0"),
+		HTTPAddr:                    env("HTTP_ADDR", ":18080"),
+		PublicAPIBaseURL:            env("PUBLIC_API_BASE_URL", "http://localhost:18080"),
+		PublicWebBaseURL:            env("PUBLIC_WEB_BASE_URL", "http://localhost:13000"),
+		DatabaseURL:                 env("DATABASE_URL", "postgres://nuvonode:nuvonode@localhost:55432/nuvonode?sslmode=disable"),
+		RedisURL:                    env("REDIS_URL", "redis://localhost:56379/0"),
 		JWTSecret:                   env("JWT_SECRET", "change_me_dev_only"),
 		APIKeyPepper:                env("API_KEY_PEPPER", "change_me_dev_only"),
 		ProviderTokenPepper:         env("PROVIDER_TOKEN_PEPPER", "change_me_dev_only"),
