@@ -178,7 +178,7 @@ func (h *Handler) OpenAIModels(c *fiber.Ctx) error {
 }
 
 func (h *Handler) Providers(c *fiber.Ctx) error {
-	providers, err := h.svc.Provider.List(c.Context(), httpx.User(c))
+	providers, err := h.svc.Provider.ListWithInstance(c.Context(), httpx.User(c))
 	if err != nil {
 		return httpx.Handle(c, err)
 	}
