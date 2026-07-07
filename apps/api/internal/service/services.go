@@ -368,6 +368,10 @@ func (s *ProviderService) List(ctx context.Context, user domain.User) ([]domain.
 	return s.store.ProvidersByOwner(ctx, user.ID)
 }
 
+func (s *ProviderService) ListWithInstance(ctx context.Context, user domain.User) ([]domain.ProviderWithInstance, error) {
+	return s.store.ProvidersWithInstance(ctx, user.ID)
+}
+
 func (s *ProviderService) ResolveToken(ctx context.Context, token string) (domain.Provider, error) {
 	if !strings.HasPrefix(token, "pvn_provider_") {
 		return domain.Provider{}, ErrInvalidCredentials

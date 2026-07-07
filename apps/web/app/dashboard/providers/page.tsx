@@ -84,13 +84,16 @@ nuvonode-provider serve`);
         {providers.length > 0 ? (
           <div className="surface">
             <table>
-              <thead><tr><th>Name</th><th>Approval</th><th>Status</th><th>Trust</th><th>Region</th><th>Created</th></tr></thead>
+              <thead><tr><th>Name</th><th>Approval</th><th>Status</th><th>Instance</th><th>Heartbeat</th><th>Models</th><th>Trust</th><th>Region</th><th>Created</th></tr></thead>
               <tbody>
                 {providers.map((provider) => (
                   <tr key={provider.id}>
                     <td>{provider.name}<div className="muted">{provider.id}</div></td>
                     <td><StatusPill value={provider.approval_status} /></td>
                     <td><StatusPill value={provider.status} /></td>
+                    <td>{provider.instance_status ? <StatusPill value={provider.instance_status} /> : <span className="muted">—</span>}</td>
+                    <td>{provider.last_heartbeat_at ? new Date(provider.last_heartbeat_at).toLocaleString() : <span className="muted">—</span>}</td>
+                    <td>{provider.model_names.length > 0 ? provider.model_names.join(", ") : <span className="muted">—</span>}</td>
                     <td><StatusPill value={provider.trust_level} /></td>
                     <td>{provider.region_hint || "—"}</td>
                     <td>{new Date(provider.created_at).toLocaleString()}</td>

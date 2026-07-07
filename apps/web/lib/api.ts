@@ -85,6 +85,9 @@ export type Provider = {
   allow_auto_model_pull: boolean;
   token_prefix?: string;
   created_at: string;
+  instance_status: string | null;
+  last_heartbeat_at: string | null;
+  model_names: string[];
 };
 
 export type Model = {

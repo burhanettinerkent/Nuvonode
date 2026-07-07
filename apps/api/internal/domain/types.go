@@ -135,6 +135,23 @@ type Provider struct {
 	CreatedAt          time.Time `json:"created_at"`
 }
 
+type ProviderWithInstance struct {
+	ID                 string     `json:"-"`
+	PublicID           string     `json:"id"`
+	OwnerUserID        string     `json:"-"`
+	Name               string     `json:"name"`
+	RegionHint         *string    `json:"region_hint"`
+	TrustLevel         string     `json:"trust_level"`
+	ApprovalStatus     string     `json:"approval_status"`
+	Status             string     `json:"status"`
+	AllowAutoModelPull bool       `json:"allow_auto_model_pull"`
+	TokenPrefix        *string    `json:"token_prefix,omitempty"`
+	CreatedAt          time.Time  `json:"created_at"`
+	InstanceStatus     *string    `json:"instance_status"`
+	InstanceHeartbeat  *time.Time `json:"last_heartbeat_at"`
+	ModelNames         []string   `json:"model_names"`
+}
+
 type ProviderInstance struct {
 	ID              string
 	PublicID        string
