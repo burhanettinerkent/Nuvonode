@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { approveProviderModel, listPendingProviderModels, rejectProviderModel, type ProviderModelAdvertisement } from "@/lib/api";
@@ -44,24 +45,27 @@ export default function AdminProviderModelsPage() {
         {loading ? <Loading /> : null}
         {!loading && ads.length === 0 ? <Empty label="No pending provider model advertisements." /> : null}
         {ads.length > 0 ? (
-          <table>
-            <thead><tr><th>Runtime model</th><th>Provider</th><th>Runtime</th><th>Digest</th><th>Created</th><th>Actions</th></tr></thead>
-            <tbody>
-              {ads.map((ad) => (
-                <tr key={ad.id}>
-                  <td>{ad.runtime_model_name}<div className="muted">{ad.id}</div></td>
-                  <td>{ad.provider_id}</td>
-                  <td>{ad.runtime}</td>
-                  <td>{ad.local_digest || "—"}</td>
-                  <td>{new Date(ad.created_at).toLocaleString()}</td>
-                  <td className="row">
-                    <button className="button" type="button" onClick={() => act(ad.id, "approve")}>Approve</button>
-                    <button className="button secondary" type="button" onClick={() => act(ad.id, "reject")}>Reject</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="surface">
+            <table>
+              <thead><tr><th>Runtime model</th><th>Provider</th><th>Runtime</th><th>Digest</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+              <tbody>
+                {ads.map((ad) => (
+                  <tr key={ad.id}>
+                    <td>{ad.runtime_model_name}<div className="muted">{ad.id}</div></td>
+                    <td>{ad.provider_id}</td>
+                    <td>{ad.runtime}</td>
+                    <td>{ad.local_digest || "—"}</td>
+                    <td><StatusPill value={ad.status} /></td>
+                    <td>{new Date(ad.created_at).toLocaleString()}</td>
+                    <td className="row">
+                      <button className="button" type="button" onClick={() => act(ad.id, "approve")}>Approve</button>
+                      <button className="button secondary" type="button" onClick={() => act(ad.id, "reject")}>Reject</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : null}
       </div>
     </Shell>

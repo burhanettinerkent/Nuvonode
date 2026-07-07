@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { CopyBox } from "@/components/CopyBox";
+import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { createAPIKey, listAPIKeys, listProjects, revokeAPIKey, type APIKey, type Project } from "@/lib/api";
@@ -98,20 +99,22 @@ export default function APIKeysPage() {
             </div>
             {plaintextKey ? <div className="notice warn stack"><strong>Copy this key now. It will not be shown again.</strong><CopyBox value={plaintextKey} /></div> : null}
             {keys.length === 0 ? <Empty label="No API keys for this project." /> : (
-              <table>
-                <thead><tr><th>Name</th><th>Prefix</th><th>Status</th><th>Created</th><th></th></tr></thead>
-                <tbody>
-                  {keys.map((key) => (
-                    <tr key={key.id}>
-                      <td>{key.name}<div className="muted">{key.id}</div></td>
-                      <td>{key.prefix}</td>
-                      <td>{key.status}</td>
-                      <td>{new Date(key.created_at).toLocaleString()}</td>
-                      <td>{key.status === "active" ? <button className="button danger" type="button" onClick={() => revoke(key.id)}>Revoke</button> : null}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="surface">
+                <table>
+                  <thead><tr><th>Name</th><th>Prefix</th><th>Status</th><th>Created</th><th></th></tr></thead>
+                  <tbody>
+                    {keys.map((key) => (
+                      <tr key={key.id}>
+                        <td>{key.name}<div className="muted">{key.id}</div></td>
+                        <td>{key.prefix}</td>
+                        <td><StatusPill value={key.status} /></td>
+                        <td>{new Date(key.created_at).toLocaleString()}</td>
+                        <td>{key.status === "active" ? <button className="button danger" type="button" onClick={() => revoke(key.id)}>Revoke</button> : null}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </>
         ) : null}

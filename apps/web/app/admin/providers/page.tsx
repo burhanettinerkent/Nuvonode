@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { approveProvider, disableProvider, listAdminProviders, rejectProvider, type Provider } from "@/lib/api";
@@ -45,26 +46,28 @@ export default function AdminProvidersPage() {
         {loading ? <Loading /> : null}
         {!loading && providers.length === 0 ? <Empty label="No providers." /> : null}
         {providers.length > 0 ? (
-          <table>
-            <thead><tr><th>Provider</th><th>Approval</th><th>Status</th><th>Trust</th><th>Region</th><th>Created</th><th>Actions</th></tr></thead>
-            <tbody>
-              {providers.map((provider) => (
-                <tr key={provider.id}>
-                  <td>{provider.name}<div className="muted">{provider.id}</div></td>
-                  <td>{provider.approval_status}</td>
-                  <td>{provider.status}</td>
-                  <td>{provider.trust_level}</td>
-                  <td>{provider.region_hint || "—"}</td>
-                  <td>{new Date(provider.created_at).toLocaleString()}</td>
-                  <td className="row">
-                    {provider.approval_status !== "approved" ? <button className="button" type="button" onClick={() => act(provider.id, "approve")}>Approve</button> : null}
-                    {provider.approval_status !== "rejected" ? <button className="button secondary" type="button" onClick={() => act(provider.id, "reject")}>Reject</button> : null}
-                    {provider.status !== "disabled" ? <button className="button danger" type="button" onClick={() => act(provider.id, "disable")}>Disable</button> : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="surface">
+            <table>
+              <thead><tr><th>Provider</th><th>Approval</th><th>Status</th><th>Trust</th><th>Region</th><th>Created</th><th>Actions</th></tr></thead>
+              <tbody>
+                {providers.map((provider) => (
+                  <tr key={provider.id}>
+                    <td>{provider.name}<div className="muted">{provider.id}</div></td>
+                    <td><StatusPill value={provider.approval_status} /></td>
+                    <td><StatusPill value={provider.status} /></td>
+                    <td><StatusPill value={provider.trust_level} /></td>
+                    <td>{provider.region_hint || "—"}</td>
+                    <td>{new Date(provider.created_at).toLocaleString()}</td>
+                    <td className="row">
+                      {provider.approval_status !== "approved" ? <button className="button" type="button" onClick={() => act(provider.id, "approve")}>Approve</button> : null}
+                      {provider.approval_status !== "rejected" ? <button className="button secondary" type="button" onClick={() => act(provider.id, "reject")}>Reject</button> : null}
+                      {provider.status !== "disabled" ? <button className="button danger" type="button" onClick={() => act(provider.id, "disable")}>Disable</button> : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : null}
       </div>
     </Shell>

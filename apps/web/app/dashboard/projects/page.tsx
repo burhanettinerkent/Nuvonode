@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { createProject, listProjects, type Project } from "@/lib/api";
@@ -31,6 +32,9 @@ export default function ProjectsPage() {
     setSuccess("");
     try {
       const monthlyLimit = limit.trim() ? Number(limit) : null;
+      if (monthlyLimit !== null && !Number.isFinite(monthlyLimit)) {
+        throw new Error("Enter a valid monthly credit limit.");
+      }
       const res = await createProject(name, monthlyLimit);
       setProjects((items) => [res.project, ...items]);
       setName("");
@@ -64,20 +68,22 @@ export default function ProjectsPage() {
         {loading ? <Loading /> : null}
         {!loading && projects.length === 0 ? <Empty label="No projects yet." /> : null}
         {projects.length > 0 ? (
-          <table>
-            <thead><tr><th>Name</th><th>Status</th><th>Monthly limit</th><th>Current spend</th><th>Created</th></tr></thead>
-            <tbody>
-              {projects.map((project) => (
-                <tr key={project.id}>
-                  <td>{project.name}<div className="muted">{project.id}</div></td>
-                  <td>{project.status}</td>
-                  <td>{project.monthly_credit_limit ?? "No limit"}</td>
-                  <td>{project.current_month_spend}</td>
-                  <td>{new Date(project.created_at).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="surface">
+            <table>
+              <thead><tr><th>Name</th><th>Status</th><th>Monthly limit</th><th>Current spend</th><th>Created</th></tr></thead>
+              <tbody>
+                {projects.map((project) => (
+                  <tr key={project.id}>
+                    <td>{project.name}<div className="muted">{project.id}</div></td>
+                    <td><StatusPill value={project.status} /></td>
+                    <td>{project.monthly_credit_limit ?? "No limit"}</td>
+                    <td>{project.current_month_spend}</td>
+                    <td>{new Date(project.created_at).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : null}
       </div>
     </Shell>
