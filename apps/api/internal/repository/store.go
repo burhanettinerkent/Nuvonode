@@ -349,16 +349,16 @@ func (s *Store) MarkJobFailed(ctx context.Context, jobID, status, code, message 
 	return err
 }
 
-func (s *Store) AllProviders(ctx context.Context) ([]domain.Provider, error) {
-	rows, err := s.DB.Query(ctx, `SELECT id::text, public_id, owner_user_id::text, name, region_hint, trust_level, approval_status, status, allow_auto_model_pull, token_prefix, created_at FROM providers WHERE deleted_at IS NULL ORDER BY created_at DESC`)
+func (s *Store) AllProviders(ctx context.Context) ([]domain.ProviderWithInstance, error) {
+	rows, err := s.DB.Query(ctx, `SELECT p.id::text, p.public_id, p.owner_user_id::text, p.name, p.region_hint, p.trust_level, p.approval_status, p.status, p.allow_auto_model_pull, p.token_prefix, p.created_at, pi.status, pi.last_heartbeat_at, COALESCE(mds.models, '{}') FROM providers p LEFT JOIN LATERAL (SELECT status, last_heartbeat_at FROM provider_instances WHERE provider_id=p.id ORDER BY last_heartbeat_at DESC NULLS LAST LIMIT 1) pi ON true LEFT JOIN LATERAL (SELECT array_agg(DISTINCT pma.runtime_model_name ORDER BY pma.runtime_model_name) AS models FROM provider_model_advertisements pma WHERE pma.provider_id=p.id AND pma.status='approved') mds ON true WHERE p.deleted_at IS NULL ORDER BY p.created_at DESC`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	out := []domain.Provider{}
+	out := []domain.ProviderWithInstance{}
 	for rows.Next() {
-		var p domain.Provider
-		if err := rows.Scan(&p.ID, &p.PublicID, &p.OwnerUserID, &p.Name, &p.RegionHint, &p.TrustLevel, &p.ApprovalStatus, &p.Status, &p.AllowAutoModelPull, &p.TokenPrefix, &p.CreatedAt); err != nil {
+		var p domain.ProviderWithInstance
+		if err := rows.Scan(&p.ID, &p.PublicID, &p.OwnerUserID, &p.Name, &p.RegionHint, &p.TrustLevel, &p.ApprovalStatus, &p.Status, &p.AllowAutoModelPull, &p.TokenPrefix, &p.CreatedAt, &p.InstanceStatus, &p.InstanceHeartbeat, &p.ModelNames); err != nil {
 			return nil, err
 		}
 		out = append(out, p)

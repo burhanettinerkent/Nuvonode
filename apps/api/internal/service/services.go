@@ -513,7 +513,7 @@ func (s *AdminService) AdjustWallet(ctx context.Context, user domain.User, targe
 	return s.wallets.AdminAdjust(ctx, user.ID, targetUserPublicID, amount, reason)
 }
 
-func (s *AdminService) Providers(ctx context.Context, user domain.User) ([]domain.Provider, error) {
+func (s *AdminService) Providers(ctx context.Context, user domain.User) ([]domain.ProviderWithInstance, error) {
 	if user.Role != "admin" {
 		return nil, ErrForbidden
 	}
