@@ -33,7 +33,7 @@ func DefaultPath() (string, error) {
 }
 
 func Default() Config {
-	return Config{ServerURL: "http://localhost:8080", OllamaURL: "http://localhost:11434", MaxConcurrentJobs: 1, HeartbeatIntervalSeconds: 15, LogLevel: "info"}
+	return Config{ServerURL: "http://localhost:18080", OllamaURL: "http://localhost:11434", MaxConcurrentJobs: 1, HeartbeatIntervalSeconds: 15, LogLevel: "info"}
 }
 
 func Load(path string) (Config, error) {

@@ -26,7 +26,7 @@ ollama_url: http://localhost:11434
 
 ```bash
 nuvonode-provider init \
-  --server http://localhost:8080 \
+  --server http://localhost:18080 \
   --token pvn_provider_... \
   --name "Home RTX"
 ```
@@ -66,7 +66,7 @@ Output example:
 ```txt
 Nuvonode Provider Doctor
 [ok] config loaded
-[ok] server reachable: http://localhost:8080
+[ok] server reachable: http://localhost:18080
 [ok] ollama reachable: http://localhost:11434
 [ok] models found: 2
 [warn] GPU VRAM detection not available on this OS
@@ -112,7 +112,7 @@ This maps Nuvonode model slug to configured Ollama runtime model name. If mappin
 ## Config file
 
 ```yaml
-server_url: "http://localhost:8080"
+server_url: "http://localhost:18080"
 provider_token: "pvn_provider_..."
 provider_name: "Home RTX"
 instance_key: "auto-generated-stable-machine-id"

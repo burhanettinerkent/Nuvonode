@@ -43,7 +43,9 @@ func (c Client) Chat(ctx context.Context, req ChatRequest) (ChatResponse, time.D
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	start := time.Now()
-	res, err := c.HTTP.Do(httpReq)
+	client := *c.HTTP
+	client.Timeout = 0
+	res, err := client.Do(httpReq)
 	latency := time.Since(start)
 	if err != nil {
 		return ChatResponse{}, latency, err

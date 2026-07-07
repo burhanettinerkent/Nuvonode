@@ -58,7 +58,7 @@ make web
 In another terminal:
 
 ```bash
-nuvonode-provider init --server http://localhost:8080 --token <provider-token> --name "Local Provider"
+nuvonode-provider init --server http://localhost:18080 --token <provider-token> --name "Local Provider"
 nuvonode-provider doctor
 nuvonode-provider serve
 ```

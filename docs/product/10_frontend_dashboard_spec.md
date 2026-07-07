@@ -252,7 +252,7 @@ Setup instructions:
 ```bash
 # 1. Install Ollama and pull a supported model manually.
 # 2. Download/build provider node.
-nuvonode-provider init --server http://localhost:8080 --token <token> --name "Home RTX"
+nuvonode-provider init --server http://localhost:18080 --token <token> --name "Home RTX"
 nuvonode-provider doctor
 nuvonode-provider serve
 ```

@@ -67,7 +67,7 @@ Scripts must be simple and readable. They can assume `jq` is installed.
 Environment variables:
 
 ```bash
-export API=http://localhost:8080
+export API=http://localhost:18080
 export EMAIL=test@example.com
 export PASSWORD=password123
 ```

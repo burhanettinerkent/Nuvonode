@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-API=${API:-http://localhost:8080}
+API=${API:-http://localhost:18080}
 EMAIL=${EMAIL:-test@example.com}
 PASSWORD=${PASSWORD:-password123}
 
