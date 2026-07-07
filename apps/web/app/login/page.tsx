@@ -42,12 +42,12 @@ export default function LoginPage() {
           <h2>Login</h2>
           {error ? <ErrorMessage error={error} /> : null}
           <div className="field">
-            <label>Email</label>
-            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <label htmlFor="login-email">Email</label>
+            <input id="login-email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="field">
-            <label>Password</label>
-            <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <label htmlFor="login-password">Password</label>
+            <input id="login-password" required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           <button className="button" type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
           <p className="muted">No account? <Link href="/register">Create one</Link></p>

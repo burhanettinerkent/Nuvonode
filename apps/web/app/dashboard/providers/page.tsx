@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { CopyBox } from "@/components/CopyBox";
 import { CreditNotice } from "@/components/CreditNotice";
 import { PrivacyNotice } from "@/components/PrivacyNotice";
+import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { createProvider, listProviders, type Provider } from "@/lib/api";
@@ -81,21 +82,23 @@ nuvonode-provider serve`);
         {loading ? <Loading /> : null}
         {!loading && providers.length === 0 ? <Empty label="No providers yet." /> : null}
         {providers.length > 0 ? (
-          <table>
-            <thead><tr><th>Name</th><th>Approval</th><th>Status</th><th>Trust</th><th>Region</th><th>Created</th></tr></thead>
-            <tbody>
-              {providers.map((provider) => (
-                <tr key={provider.id}>
-                  <td>{provider.name}<div className="muted">{provider.id}</div></td>
-                  <td>{provider.approval_status}</td>
-                  <td>{provider.status}</td>
-                  <td>{provider.trust_level}</td>
-                  <td>{provider.region_hint || "—"}</td>
-                  <td>{new Date(provider.created_at).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="surface">
+            <table>
+              <thead><tr><th>Name</th><th>Approval</th><th>Status</th><th>Trust</th><th>Region</th><th>Created</th></tr></thead>
+              <tbody>
+                {providers.map((provider) => (
+                  <tr key={provider.id}>
+                    <td>{provider.name}<div className="muted">{provider.id}</div></td>
+                    <td><StatusPill value={provider.approval_status} /></td>
+                    <td><StatusPill value={provider.status} /></td>
+                    <td><StatusPill value={provider.trust_level} /></td>
+                    <td>{provider.region_hint || "—"}</td>
+                    <td>{new Date(provider.created_at).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : null}
       </div>
     </Shell>

@@ -50,20 +50,20 @@ export default function RegisterPage() {
           <h2>Create account</h2>
           {error ? <ErrorMessage error={error} /> : null}
           <div className="field">
-            <label>Display name</label>
-            <input required value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+            <label htmlFor="register-display-name">Display name</label>
+            <input id="register-display-name" required value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
           </div>
           <div className="field">
-            <label>Email</label>
-            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <label htmlFor="register-email">Email</label>
+            <input id="register-email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="field">
-            <label>Password</label>
-            <input required minLength={8} type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <label htmlFor="register-password">Password</label>
+            <input id="register-password" required minLength={8} type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           <div className="field">
-            <label>Confirm password</label>
-            <input required minLength={8} type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+            <label htmlFor="register-confirm-password">Confirm password</label>
+            <input id="register-confirm-password" required minLength={8} type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
           </div>
           <button className="button" type="submit" disabled={loading}>{loading ? "Creating..." : "Create account"}</button>
           <p className="muted">Already have an account? <Link href="/login">Login</Link></p>

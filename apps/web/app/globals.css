@@ -178,7 +178,8 @@ h2, h3, p { margin-top: 0; }
 }
 .header-actions { display: flex; align-items: center; gap: 12px; }
 
-.surface { border: 1px solid var(--border); border-radius: 22px; overflow: hidden; background: rgba(15, 23, 42, 0.72); box-shadow: var(--shadow); }
+.surface { border: 1px solid var(--border); border-radius: 22px; overflow-x: auto; background: rgba(15, 23, 42, 0.72); box-shadow: var(--shadow); }
+.surface table { min-width: 760px; border: 0; border-radius: 0; box-shadow: none; }
 table { width: 100%; border-collapse: collapse; background: rgba(15, 23, 42, 0.72); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
 th, td { text-align: left; border-bottom: 1px solid var(--border); padding: 12px 14px; vertical-align: top; }
 th { background: rgba(30, 41, 59, 0.82); color: #aab8cf; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }

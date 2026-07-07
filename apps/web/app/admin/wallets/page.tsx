@@ -16,12 +16,17 @@ export default function AdminWalletsPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const amountCredits = Number(amount);
+    if (!Number.isFinite(amountCredits)) {
+      setError(new Error("Enter a valid credit amount."));
+      return;
+    }
     setSaving(true);
     setError(null);
     setResult(null);
     try {
-      if (!confirm(`Adjust wallet ${userID} by ${amount} credits?`)) return;
-      const res = await adjustAdminWallet(userID, Number(amount), reason);
+      if (!confirm(`Adjust wallet ${userID} by ${amountCredits} credits?\nReason: ${reason}`)) return;
+      const res = await adjustAdminWallet(userID, amountCredits, reason);
       setResult(res);
       setAmount("");
       setReason("");
@@ -37,10 +42,14 @@ export default function AdminWalletsPage() {
     <Shell>
       <div className="stack">
         <h1>Admin Wallets</h1>
+        <div className="notice warn">
+          Wallet adjustments move internal usage credits only. Credits are not money, cannot be withdrawn, and do not create payout or crypto obligations. Every adjustment writes wallet ledger and audit entries.
+        </div>
         <form className="card stack" onSubmit={submit}>
           <div className="field">
             <label htmlFor="user-id">User public id</label>
             <input id="user-id" required value={userID} onChange={(event) => setUserID(event.target.value)} placeholder="usr_..." />
+            <div className="muted">Use the target user public id. Positive amounts credit the user; negative amounts debit the user.</div>
           </div>
           <div className="field">
             <label htmlFor="amount">Credit amount</label>
@@ -49,6 +58,7 @@ export default function AdminWalletsPage() {
           <div className="field">
             <label htmlFor="reason">Reason</label>
             <textarea id="reason" required value={reason} onChange={(event) => setReason(event.target.value)} />
+            <div className="muted">Use a specific operational reason; this text is stored with the adjustment record.</div>
           </div>
           <label className="row">
             <input checked={confirmed} required type="checkbox" onChange={(event) => setConfirmed(event.target.checked)} />

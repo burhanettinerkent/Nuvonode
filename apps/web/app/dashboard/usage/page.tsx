@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading } from "@/components/State";
 import { listProjects, listUsage, type Project, type UsageRecord } from "@/lib/api";
@@ -73,22 +74,24 @@ export default function UsagePage() {
         {loading ? <Loading /> : null}
         {!loading && usage.length === 0 ? <Empty label="No usage records found." /> : null}
         {usage.length > 0 ? (
-          <table>
-            <thead><tr><th>Job</th><th>Project</th><th>Model</th><th>Tokens</th><th>Credits</th><th>Status</th><th>Created</th></tr></thead>
-            <tbody>
-              {usage.map((row) => (
-                <tr key={row.id}>
-                  <td>{row.job_id}<div className="muted">{row.id}</div></td>
-                  <td>{row.project_id}</td>
-                  <td>{row.model_slug}</td>
-                  <td>{row.total_tokens}<div className="muted">in {row.input_tokens} / out {row.output_tokens}</div></td>
-                  <td>{row.cost_credits}</td>
-                  <td>{row.status}</td>
-                  <td>{new Date(row.created_at).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="surface">
+            <table>
+              <thead><tr><th>Job</th><th>Project</th><th>Model</th><th>Tokens</th><th>Credits</th><th>Status</th><th>Created</th></tr></thead>
+              <tbody>
+                {usage.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.job_id}<div className="muted">{row.id}</div></td>
+                    <td>{row.project_id}</td>
+                    <td>{row.model_slug}</td>
+                    <td>{row.total_tokens}<div className="muted">in {row.input_tokens} / out {row.output_tokens}</div></td>
+                    <td>{row.cost_credits}</td>
+                    <td><StatusPill value={row.status} /></td>
+                    <td>{new Date(row.created_at).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : null}
       </div>
     </Shell>

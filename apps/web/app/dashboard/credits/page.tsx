@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CreditNotice } from "@/components/CreditNotice";
+import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading } from "@/components/State";
 import { getWallet, listLedger, type LedgerEntry, type Wallet } from "@/lib/api";
@@ -36,21 +37,23 @@ export default function CreditsPage() {
             </div>
             <CreditNotice />
             {ledger.length === 0 ? <Empty label="No ledger entries yet." /> : (
-              <table>
-                <thead><tr><th>Type</th><th>Amount</th><th>Reserved delta</th><th>Balance after</th><th>Reason</th><th>Created</th></tr></thead>
-                <tbody>
-                  {ledger.map((entry) => (
-                    <tr key={entry.id}>
-                      <td>{entry.entry_type}<div className="muted">{entry.id}</div></td>
-                      <td>{entry.amount_credits}</td>
-                      <td>{entry.reserved_delta}</td>
-                      <td>{entry.balance_after}</td>
-                      <td>{entry.reason || "—"}</td>
-                      <td>{new Date(entry.created_at).toLocaleString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="surface">
+                <table>
+                  <thead><tr><th>Type</th><th>Amount</th><th>Reserved delta</th><th>Balance after</th><th>Reason</th><th>Created</th></tr></thead>
+                  <tbody>
+                    {ledger.map((entry) => (
+                      <tr key={entry.id}>
+                        <td><StatusPill value={entry.entry_type} /><div className="muted">{entry.id}</div></td>
+                        <td>{entry.amount_credits}</td>
+                        <td>{entry.reserved_delta}</td>
+                        <td>{entry.balance_after}</td>
+                        <td>{entry.reason || "—"}</td>
+                        <td>{new Date(entry.created_at).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </>
         ) : null}
