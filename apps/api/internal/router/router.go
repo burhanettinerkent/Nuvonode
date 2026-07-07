@@ -52,6 +52,7 @@ func New(cfg config.Config, log *zap.Logger, rdb *redis.Client, h *handler.Handl
 	authenticated.Get("/admin/provider-models/pending", h.PendingProviderModels)
 	authenticated.Post("/admin/provider-models/:id/approve", h.ApproveProviderModel)
 	authenticated.Post("/admin/provider-models/:id/reject", h.RejectProviderModel)
+	authenticated.Get("/admin/audit-log", h.AdminAuditLog)
 
 	app.Get("/v1/models", h.OpenAIModels)
 	app.Post("/v1/chat/completions", httpx.RateLimitMiddleware(rdb, cfg.DefaultRateLimitPerMinute), h.ChatCompletions)

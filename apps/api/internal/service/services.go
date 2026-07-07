@@ -533,6 +533,13 @@ func (s *AdminService) DisableProvider(ctx context.Context, user domain.User, pr
 	return s.store.DisableProvider(ctx, user.ID, providerPublicID)
 }
 
+func (s *AdminService) AuditLog(ctx context.Context, user domain.User) ([]domain.AdminAuditLogEntry, error) {
+	if user.Role != "admin" {
+		return nil, ErrForbidden
+	}
+	return s.store.AdminAuditLog(ctx)
+}
+
 func (s *AdminService) PendingProviderModelAdvertisements(ctx context.Context, user domain.User) ([]domain.ProviderModelAdvertisement, error) {
 	if user.Role != "admin" {
 		return nil, ErrForbidden
