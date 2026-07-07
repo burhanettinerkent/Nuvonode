@@ -4,7 +4,7 @@ Nuvonode Mesh is an open-source AI inference network for open models.
 
 Developers call one OpenAI-compatible API. GPU owners run a provider node on their own machine. The network routes approved jobs to healthy providers, records usage, and rewards providers with internal platform credits.
 
-V1 is intentionally simple: local Ollama providers, PostgreSQL as source of truth, Redis for ephemeral state, internal credits only, and no fiat or crypto payouts.
+V1 is intentionally simple: local Ollama providers, PostgreSQL as source of truth, Redis for ephemeral state, and internal credits for usage and provider rewards.
 
 ## Who this is for
 
@@ -27,7 +27,7 @@ Run `nuvonode-provider` if you want to:
 - Serve approved inference jobs
 - Earn internal platform credits for successful completed jobs
 
-V1 provider earnings are internal credits only. They cannot be withdrawn, sold, transferred, or converted to money.
+Providers earn internal platform credits for successful completed jobs.
 
 ### Contributors
 
@@ -62,23 +62,19 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## What V1 does not do
 
-- No fiat payouts
-- No crypto/token payouts
-- No provider cash settlement
-- No withdrawal system
+- No public pricing marketplace
 - No default paid external model calls
 - No 70B+ distributed model execution by default
 - No enterprise privacy guarantee for prompts routed to community machines
 
 ## Credit model
 
-Nuvonode V1 credits are internal usage credits.
+Nuvonode uses internal credits to track usage and provider rewards.
 
 - Users spend credits when they call models.
 - Providers earn credits when approved jobs complete successfully.
 - Every credit movement is written to `wallet_ledger`.
 - Wallet balance updates and ledger entries happen in the same transaction.
-- Provider rewards are not money and have no cash value in V1.
 
 ## Security and privacy boundary
 
@@ -316,7 +312,7 @@ Admin approval is required before production routing. In local development, `ALL
 9. User wallet is debited.
 10. Provider wallet is credited with internal credits.
 
-Credits remain internal usage credits in V1.
+Provider credits appear in the provider wallet after settlement.
 
 ## Admin moderation
 
@@ -363,8 +359,7 @@ Admin moderation exists because community providers are semi-trusted machines.
 
 ### Not planned for V1
 
-- Cash withdrawal
-- Crypto payouts
+- Public pricing marketplace
 - Default paid external providers
 - Distributed 70B+ model splitting across home machines
 
@@ -376,7 +371,7 @@ Before opening a pull request:
 
 - Run API/provider tests.
 - Update docs when behavior changes.
-- Do not add payout, crypto, or cash settlement logic.
+- Keep changes aligned with the V1 provider-credit model.
 - Do not log prompts by default.
 - Do not introduce arbitrary command execution in provider-node.
 - Keep provider nodes semi-trusted.
