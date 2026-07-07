@@ -244,6 +244,14 @@ func (h *Handler) AdminJobs(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"jobs": jobs})
 }
 
+func (h *Handler) AdminAuditLog(c *fiber.Ctx) error {
+	entries, err := h.svc.Admin.AuditLog(c.Context(), httpx.User(c))
+	if err != nil {
+		return httpx.Handle(c, err)
+	}
+	return c.JSON(fiber.Map{"audit_log": entries})
+}
+
 func (h *Handler) AdminUsage(c *fiber.Ctx) error {
 	usage, err := h.svc.Admin.Usage(c.Context(), httpx.User(c))
 	if err != nil {

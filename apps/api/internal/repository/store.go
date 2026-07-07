@@ -427,6 +427,23 @@ func (s *Store) AdminUsage(ctx context.Context) ([]domain.AdminUsageRecord, erro
 	return out, rows.Err()
 }
 
+func (s *Store) AdminAuditLog(ctx context.Context) ([]domain.AdminAuditLogEntry, error) {
+	rows, err := s.DB.Query(ctx, `SELECT aud.public_id, u.public_id, aud.action, aud.target_type, aud.target_id, aud.created_at FROM audit_log aud LEFT JOIN users u ON u.id=aud.actor_user_id ORDER BY aud.created_at DESC LIMIT 100`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := []domain.AdminAuditLogEntry{}
+	for rows.Next() {
+		var e domain.AdminAuditLogEntry
+		if err := rows.Scan(&e.PublicID, &e.ActorUserID, &e.Action, &e.TargetType, &e.TargetID, &e.CreatedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, e)
+	}
+	return out, rows.Err()
+}
+
 func (s *Store) UsageByOwner(ctx context.Context, ownerUserID string, filter domain.UsageFilter) ([]domain.UsageRecord, error) {
 	rows, err := s.DB.Query(ctx, `SELECT ur.public_id, j.public_id, p.public_id, m.public_id, m.slug, pr.public_id, pi.public_id, ur.input_tokens, ur.output_tokens, ur.total_tokens, ur.token_source, ur.cost_credits, ur.latency_ms, ur.status, ur.created_at FROM usage_records ur JOIN inference_jobs j ON j.id=ur.job_id JOIN projects p ON p.id=ur.project_id JOIN models m ON m.id=ur.model_id LEFT JOIN providers pr ON pr.id=ur.provider_id LEFT JOIN provider_instances pi ON pi.id=ur.provider_instance_id WHERE p.owner_user_id=$1 AND ($2='' OR p.public_id=$2) AND ($3::timestamptz IS NULL OR ur.created_at >= $3) AND ($4::timestamptz IS NULL OR ur.created_at <= $4) AND ($5='' OR m.slug=$5) ORDER BY ur.created_at DESC LIMIT 100`, ownerUserID, filter.ProjectPublicID, filter.From, filter.To, filter.ModelSlug)
 	if err != nil {

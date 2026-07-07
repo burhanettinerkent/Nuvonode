@@ -216,6 +216,16 @@ type UsageRecord struct {
 	CreatedAt          time.Time `json:"created_at"`
 }
 
+type AdminAuditLogEntry struct {
+	PublicID    string     `json:"id"`
+	ActorUserID string     `json:"actor_user_id"`
+	Action      string     `json:"action"`
+	TargetType  *string    `json:"target_type"`
+	TargetID    *string    `json:"target_id"`
+	Metadata    []byte     `json:"-"`
+	CreatedAt   time.Time  `json:"created_at"`
+}
+
 type UsageFilter struct {
 	ProjectPublicID string
 	From            *time.Time

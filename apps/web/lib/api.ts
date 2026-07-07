@@ -326,6 +326,19 @@ export function listAdminUsage() {
   return apiFetch<{ usage: AdminUsageRecord[] | null }>("/api/admin/usage").then((res) => ({ usage: arrayOrEmpty(res.usage) }));
 }
 
+export type AdminAuditLogEntry = {
+  id: string;
+  actor_user_id: string;
+  action: string;
+  target_type: string | null;
+  target_id: string | null;
+  created_at: string;
+};
+
+export function listAdminAuditLog() {
+  return apiFetch<{ audit_log: AdminAuditLogEntry[] | null }>("/api/admin/audit-log").then((res) => ({ audit_log: arrayOrEmpty(res.audit_log) }));
+}
+
 export function adjustAdminWallet(userID: string, amountCredits: number, reason: string) {
   return apiFetch<AdminWalletAdjustResponse>(`/api/admin/wallets/${userID}/adjust`, { method: "POST", body: JSON.stringify({ amount_credits: amountCredits, reason }) });
 }
