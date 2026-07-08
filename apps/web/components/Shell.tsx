@@ -8,24 +8,19 @@ import { clearToken, getToken, type User } from "@/lib/session";
 import { ErrorMessage, Loading } from "./State";
 
 const userLinks = [
-  ["Overview", "/dashboard"],
-  ["Projects", "/dashboard/projects"],
-  ["API Keys", "/dashboard/api-keys"],
-  ["Models", "/dashboard/models"],
-  ["Credits", "/dashboard/credits"],
-  ["Usage", "/dashboard/usage"],
-  ["Providers", "/dashboard/providers"],
+  ["Ana Sayfa", "/dashboard"],
+  ["API", "/dashboard/api-keys"],
+  ["Kullanım", "/dashboard/usage"],
+  ["Bakiye", "/dashboard/credits"],
+  ["Node'larım", "/dashboard/providers"],
 ];
 
 const adminLinks = [
-  ["Overview", "/admin"],
-  ["Providers", "/admin/providers"],
-  ["Provider Models", "/admin/provider-models"],
-  ["Models", "/admin/models"],
-  ["Jobs", "/admin/jobs"],
-  ["Usage", "/admin/usage"],
-  ["Wallets", "/admin/wallets"],
-  ["Audit Log", "/admin/audit-log"],
+  ["İnceleme", "/admin/providers"],
+  ["Modeller", "/admin/models"],
+  ["İstekler", "/admin/jobs"],
+  ["Kredi düzenleme", "/admin/wallets"],
+  ["Denetim", "/admin/audit-log"],
 ];
 
 function NavLink({ label, href }: { label: string; href: string }) {
@@ -61,8 +56,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <div className="brand-mark">
           <div className="brand-icon" />
           <div>
-            <strong>Nuvonode Mesh</strong>
-            <div className="muted">Inference control plane</div>
+            <strong>Nuvonode</strong>
+            <div className="muted">AI inference</div>
           </div>
         </div>
         <div className="nav-section">
