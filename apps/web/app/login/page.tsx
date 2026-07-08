@@ -33,24 +33,23 @@ export default function LoginPage() {
     <main className="page">
       <section className="hero">
         <div className="stack">
-          <Link href="/" className="badge">Nuvonode Mesh</Link>
-          <span className="eyebrow">Dashboard access</span>
-          <h1>Operate your inference workspace.</h1>
-          <p className="muted">Manage projects, keys, credits, usage, provider nodes, and admin moderation from one control plane.</p>
+          <Link href="/" className="badge">Nuvonode</Link>
+          <h1>Hesabına giriş yap.</h1>
+          <p className="muted">API anahtarlarını, kullanımını ve bakiyeni görüntüle.</p>
         </div>
         <form className="card stack" onSubmit={submit}>
-          <h2>Login</h2>
+          <h2>Giriş yap</h2>
           {error ? <ErrorMessage error={error} /> : null}
           <div className="field">
             <label htmlFor="login-email">Email</label>
             <input id="login-email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="field">
-            <label htmlFor="login-password">Password</label>
+            <label htmlFor="login-password">Şifre</label>
             <input id="login-password" required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
-          <button className="button" type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
-          <p className="muted">No account? <Link href="/register">Create one</Link></p>
+          <button className="button" type="submit" disabled={loading}>{loading ? "Giriş yapılıyor..." : "Giriş yap"}</button>
+          <p className="muted">Hesabın yok mu? <Link href="/register">Hesap oluştur</Link></p>
         </form>
       </section>
     </main>
