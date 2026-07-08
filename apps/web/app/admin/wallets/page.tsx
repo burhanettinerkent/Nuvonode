@@ -3,30 +3,44 @@
 import { FormEvent, useState } from "react";
 import { Shell } from "@/components/Shell";
 import { ErrorMessage } from "@/components/State";
-import { adjustAdminWallet, type AdminWalletAdjustResponse } from "@/lib/api";
+import { adjustAdminWallet, listAdminUsage, type AdminWalletAdjustResponse } from "@/lib/api";
 
-export default function AdminWalletsPage() {
-  const [userID, setUserID] = useState("");
+export default function AdminCreditAdjustmentPage() {
+  const [email, setEmail] = useState("");
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [result, setResult] = useState<AdminWalletAdjustResponse | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [saving, setSaving] = useState(false);
+  const [foundUser, setFoundUser] = useState<string>("");
+
+  async function lookupUser() {
+    setError(null);
+    setFoundUser("");
+    try {
+      const usage = await listAdminUsage();
+      for (const row of usage.usage) {
+        if (row.user_id) {
+          // use first found user id as lookup stub
+        }
+      }
+    } catch {}
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const amountCredits = Number(amount);
     if (!Number.isFinite(amountCredits)) {
-      setError(new Error("Enter a valid credit amount."));
+      setError(new Error("Geçerli bir kredi miktarı gir."));
       return;
     }
     setSaving(true);
     setError(null);
     setResult(null);
     try {
-      if (!confirm(`Adjust wallet ${userID} by ${amountCredits} credits?\nReason: ${reason}`)) return;
-      const res = await adjustAdminWallet(userID, amountCredits, reason);
+      if (!confirm(`Kullanıcı ${email} için ${amountCredits} kredi düzenlemesi?\nSebep: ${reason}`)) return;
+      const res = await adjustAdminWallet(email, amountCredits, reason);
       setResult(res);
       setAmount("");
       setReason("");
@@ -41,30 +55,28 @@ export default function AdminWalletsPage() {
   return (
     <Shell>
       <div className="stack">
-        <h1>Admin Wallets</h1>
+        <h1>Kredi düzenleme</h1>
         <div className="notice warn">
-          Wallet adjustments move internal usage credits only. Credits are not money, cannot be withdrawn, and do not create payout or crypto obligations. Every adjustment writes wallet ledger and audit entries.
+          Kredi düzenlemeleri dahili platform kredilerini etkiler. Her işlem ledger ve denetim kaydına yazılır. Pozitif miktar kullanıcıya kredi ekler, negatif miktar keser.
         </div>
         <form className="card stack" onSubmit={submit}>
           <div className="field">
-            <label htmlFor="user-id">User public id</label>
-            <input id="user-id" required value={userID} onChange={(event) => setUserID(event.target.value)} placeholder="usr_..." />
-            <div className="muted">Use the target user public id. Positive amounts credit the user; negative amounts debit the user.</div>
+            <label htmlFor="user-email">Kullanıcı email</label>
+            <input id="user-email" required type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="ornek@email.com" />
           </div>
           <div className="field">
-            <label htmlFor="amount">Credit amount</label>
+            <label htmlFor="amount">Kredi miktarı</label>
             <input id="amount" required type="number" value={amount} onChange={(event) => setAmount(event.target.value)} />
           </div>
           <div className="field">
-            <label htmlFor="reason">Reason</label>
+            <label htmlFor="reason">Sebep</label>
             <textarea id="reason" required value={reason} onChange={(event) => setReason(event.target.value)} />
-            <div className="muted">Use a specific operational reason; this text is stored with the adjustment record.</div>
           </div>
           <label className="row">
             <input checked={confirmed} required type="checkbox" onChange={(event) => setConfirmed(event.target.checked)} />
-            I confirm this wallet adjustment should write a ledger and audit entry.
+            Bu işlemin ledger ve denetim kaydına yazılacağını onaylıyorum.
           </label>
-          <button className="button" disabled={saving || !confirmed} type="submit">{saving ? "Adjusting..." : "Adjust wallet"}</button>
+          <button className="button" disabled={saving || !confirmed} type="submit">{saving ? "Düzenleniyor..." : "Kredi düzenle"}</button>
         </form>
         {error ? <ErrorMessage error={error} /> : null}
         {result ? <div className="notice">Bakiye: {result.wallet.balance}</div> : null}
