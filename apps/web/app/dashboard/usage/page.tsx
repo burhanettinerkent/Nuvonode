@@ -47,43 +47,41 @@ export default function UsagePage() {
   return (
     <Shell>
       <div className="stack">
-        <h1>Usage</h1>
+        <h1>Kullanım</h1>
         <form className="card grid" onSubmit={submit}>
           <div className="field">
-            <label htmlFor="project">Project</label>
+            <label htmlFor="project">Uygulama</label>
             <select id="project" value={projectID} onChange={(event) => setProjectID(event.target.value)}>
-              <option value="">All projects</option>
+              <option value="">Tümü</option>
               {projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}
             </select>
           </div>
           <div className="field">
-            <label htmlFor="model">Model slug</label>
-            <input id="model" value={model} onChange={(event) => setModel(event.target.value)} placeholder="All models" />
+            <label htmlFor="model">Model</label>
+            <input id="model" value={model} onChange={(event) => setModel(event.target.value)} placeholder="Tüm modeller" />
           </div>
           <div className="field">
-            <label htmlFor="from">From</label>
+            <label htmlFor="from">Başlangıç</label>
             <input id="from" type="datetime-local" value={from} onChange={(event) => setFrom(event.target.value)} />
           </div>
           <div className="field">
-            <label htmlFor="to">To</label>
+            <label htmlFor="to">Bitiş</label>
             <input id="to" type="datetime-local" value={to} onChange={(event) => setTo(event.target.value)} />
           </div>
-          <button className="button" type="submit">Apply filters</button>
+          <button className="button" type="submit">Filtrele</button>
         </form>
         {error ? <ErrorMessage error={error} /> : null}
         {loading ? <Loading /> : null}
-        {!loading && usage.length === 0 ? <Empty label="No usage records found." /> : null}
+        {!loading && usage.length === 0 ? <Empty label="Henüz hiç kullanım kaydı yok." /> : null}
         {usage.length > 0 ? (
           <div className="surface">
             <table>
-              <thead><tr><th>Job</th><th>Project</th><th>Model</th><th>Tokens</th><th>Credits</th><th>Status</th><th>Created</th></tr></thead>
+              <thead><tr><th>Model</th><th>Token</th><th>Kredi</th><th>Durum</th><th>Tarih</th></tr></thead>
               <tbody>
                 {usage.map((row) => (
                   <tr key={row.id}>
-                    <td>{row.job_id}<div className="muted">{row.id}</div></td>
-                    <td>{row.project_id}</td>
                     <td>{row.model_slug}</td>
-                    <td>{row.total_tokens}<div className="muted">in {row.input_tokens} / out {row.output_tokens}</div></td>
+                    <td>{row.total_tokens} <span className="muted">(giriş {row.input_tokens} / çıkış {row.output_tokens})</span></td>
                     <td>{row.cost_credits}</td>
                     <td><StatusPill value={row.status} /></td>
                     <td>{new Date(row.created_at).toLocaleString()}</td>
