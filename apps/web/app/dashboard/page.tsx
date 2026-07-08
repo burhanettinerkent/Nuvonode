@@ -40,8 +40,7 @@ export default function DashboardPage() {
         {!loading && !error ? (
           <>
             <div className="grid">
-              <div className="panel"><div className="muted">Available credits</div><h2>{wallet?.balance_credits ?? 0}</h2></div>
-              <div className="panel"><div className="muted">Reserved credits</div><h2>{wallet?.reserved_credits ?? 0}</h2></div>
+              <div className="panel"><div className="muted">Bakiye</div><h2>{wallet?.balance ?? 0}</h2></div>
               <div className="panel"><div className="muted">Active projects</div><h2>{projects.filter((p) => p.status === "active").length}</h2></div>
               <div className="panel"><div className="muted">Provider nodes</div><h2>{providers.length}</h2></div>
               <div className="panel"><div className="muted">Usage records</div><h2>{usage.length}</h2></div>

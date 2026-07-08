@@ -211,11 +211,7 @@ func (s *WalletService) FinalizeUsage(ctx context.Context, in UsageSettlement) e
 			}
 		}
 		if in.ProviderRewardCredits > 0 {
-			var providerWalletID string
-			if err := tx.QueryRow(ctx, `SELECT w.id::text FROM wallets w JOIN providers p ON p.id=w.owner_id WHERE w.owner_type='provider' AND p.public_id=$1`, in.ProviderPublicID).Scan(&providerWalletID); err != nil {
-				return err
-			}
-			if err := s.addLedger(ctx, tx, providerWalletID, "credit_provider_reward", in.ProviderRewardCredits, 0, "chat_completion_provider_reward", nil); err != nil {
+			if err := s.addLedger(ctx, tx, in.UserWalletID, "credit_provider_reward", in.ProviderRewardCredits, 0, "chat_completion_provider_reward", nil); err != nil {
 				return err
 			}
 		}

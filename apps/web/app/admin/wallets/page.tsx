@@ -67,7 +67,7 @@ export default function AdminWalletsPage() {
           <button className="button" disabled={saving || !confirmed} type="submit">{saving ? "Adjusting..." : "Adjust wallet"}</button>
         </form>
         {error ? <ErrorMessage error={error} /> : null}
-        {result ? <div className="notice">Wallet {result.wallet.id} balance: {result.wallet.balance_credits}, reserved: {result.wallet.reserved_credits}</div> : null}
+        {result ? <div className="notice">Bakiye: {result.wallet.balance}</div> : null}
       </div>
     </Shell>
   );

@@ -26,26 +26,24 @@ export default function CreditsPage() {
   return (
     <Shell>
       <div className="stack">
-        <h1>Credits</h1>
+        <h1>Bakiye</h1>
         {error ? <ErrorMessage error={error} /> : null}
         {loading ? <Loading /> : null}
         {!loading && !error ? (
           <>
             <div className="grid">
-              <div className="panel"><div className="muted">Available credits</div><h2>{wallet?.balance_credits ?? 0}</h2></div>
-              <div className="panel"><div className="muted">Reserved credits</div><h2>{wallet?.reserved_credits ?? 0}</h2></div>
+              <div className="panel"><div className="muted">Harcanabilir bakiye</div><h2>{wallet?.balance ?? 0}</h2></div>
             </div>
             <CreditNotice />
-            {ledger.length === 0 ? <Empty label="No ledger entries yet." /> : (
+            {ledger.length === 0 ? <Empty label="Henüz hiç hareket yok." /> : (
               <div className="surface">
                 <table>
-                  <thead><tr><th>Type</th><th>Amount</th><th>Reserved delta</th><th>Balance after</th><th>Reason</th><th>Created</th></tr></thead>
+                  <thead><tr><th>Tip</th><th>Miktar</th><th>Kalan bakiye</th><th>Açıklama</th><th>Tarih</th></tr></thead>
                   <tbody>
                     {ledger.map((entry) => (
                       <tr key={entry.id}>
-                        <td><StatusPill value={entry.entry_type} /><div className="muted">{entry.id}</div></td>
+                        <td><StatusPill value={entry.entry_type} /></td>
                         <td>{entry.amount_credits}</td>
-                        <td>{entry.reserved_delta}</td>
                         <td>{entry.balance_after}</td>
                         <td>{entry.reason || "—"}</td>
                         <td>{new Date(entry.created_at).toLocaleString()}</td>
