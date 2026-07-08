@@ -5,12 +5,13 @@ import { CopyBox } from "@/components/CopyBox";
 import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
-import { createAPIKey, listAPIKeys, listProjects, revokeAPIKey, type APIKey, type Project } from "@/lib/api";
+import { createAPIKey, listAPIKeys, listModels, listProjects, revokeAPIKey, type APIKey, type Model, type Project } from "@/lib/api";
 
-export default function APIKeysPage() {
+export default function APIPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectID, setProjectID] = useState("");
   const [keys, setKeys] = useState<APIKey[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
   const [name, setName] = useState("");
   const [plaintextKey, setPlaintextKey] = useState("");
   const [error, setError] = useState<unknown>(null);
@@ -19,10 +20,11 @@ export default function APIKeysPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    listProjects()
-      .then((res) => {
-        setProjects(res.projects);
-        setProjectID(res.projects[0]?.id || "");
+    Promise.all([listProjects(), listModels()])
+      .then(([projectRes, modelRes]) => {
+        setProjects(projectRes.projects);
+        setProjectID(projectRes.projects[0]?.id || "");
+        setModels(modelRes.models);
       })
       .catch(setError)
       .finally(() => setLoading(false));
@@ -33,11 +35,9 @@ export default function APIKeysPage() {
       setKeys([]);
       return;
     }
-    setLoading(true);
     listAPIKeys(projectID)
       .then((res) => setKeys(res.api_keys))
       .catch(setError)
-      .finally(() => setLoading(false));
   }, [projectID]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -47,10 +47,10 @@ export default function APIKeysPage() {
     setSuccess("");
     setPlaintextKey("");
     try {
-      const res = await createAPIKey(projectID, name);
+      const res = await createAPIKey(projectID, name || "Varsayılan");
       setKeys((items) => [res.api_key, ...items]);
       setPlaintextKey(res.plaintext_key);
-      setSuccess("API key created. Copy it now; it cannot be shown again.");
+      setSuccess("API anahtarı oluşturuldu. Kopyala, bir daha gösterilmez.");
       setName("");
     } catch (err) {
       setError(err);
@@ -60,13 +60,13 @@ export default function APIKeysPage() {
   }
 
   async function revoke(keyID: string) {
-    if (!confirm("Revoke this API key? Existing clients using it will stop working.")) return;
+    if (!confirm("Bu anahtarı iptal et? Mevcut istemciler çalışmaz.")) return;
     setError(null);
     setSuccess("");
     try {
       await revokeAPIKey(projectID, keyID);
       setKeys((items) => items.map((key) => key.id === keyID ? { ...key, status: "revoked" } : key));
-      setSuccess("API key revoked.");
+      setSuccess("Anahtar iptal edildi.");
     } catch (err) {
       setError(err);
     }
@@ -75,47 +75,83 @@ export default function APIKeysPage() {
   return (
     <Shell>
       <div className="stack">
-        <h1>API Keys</h1>
+        <h1>API</h1>
         {error ? <ErrorMessage error={error} /> : null}
         {success ? <SuccessMessage message={success} /> : null}
         {loading ? <Loading /> : null}
-        {!loading && projects.length === 0 ? <Empty label="Create a project before creating API keys." /> : null}
+        {!loading && projects.length === 0 ? <Empty label="Henüz bir uygulaman yok. Önce proje oluştur." /> : null}
         {projects.length > 0 ? (
           <>
             <div className="card stack">
               <div className="field">
-                <label htmlFor="project">Project</label>
+                <label htmlFor="project">Uygulama</label>
                 <select id="project" value={projectID} onChange={(event) => setProjectID(event.target.value)}>
                   {projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}
                 </select>
               </div>
               <form className="stack" onSubmit={submit}>
                 <div className="field">
-                  <label htmlFor="key-name">Key name</label>
-                  <input id="key-name" required value={name} onChange={(event) => setName(event.target.value)} />
+                  <label htmlFor="key-name">Anahtar adı</label>
+                  <input id="key-name" value={name} onChange={(event) => setName(event.target.value)} placeholder="Varsayılan" />
                 </div>
-                <button className="button" disabled={saving || !projectID} type="submit">{saving ? "Creating..." : "Create API key"}</button>
+                <button className="button" disabled={saving || !projectID} type="submit">{saving ? "Oluşturuluyor..." : "API anahtarı oluştur"}</button>
               </form>
             </div>
-            {plaintextKey ? <div className="notice warn stack"><strong>Copy this key now. It will not be shown again.</strong><CopyBox value={plaintextKey} /></div> : null}
-            {keys.length === 0 ? <Empty label="No API keys for this project." /> : (
-              <div className="surface">
-                <table>
-                  <thead><tr><th>Name</th><th>Prefix</th><th>Status</th><th>Created</th><th></th></tr></thead>
-                  <tbody>
-                    {keys.map((key) => (
-                      <tr key={key.id}>
-                        <td>{key.name}<div className="muted">{key.id}</div></td>
-                        <td>{key.prefix}</td>
-                        <td><StatusPill value={key.status} /></td>
-                        <td>{new Date(key.created_at).toLocaleString()}</td>
-                        <td>{key.status === "active" ? <button className="button danger" type="button" onClick={() => revoke(key.id)}>Revoke</button> : null}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {plaintextKey ? (() => {
+              const example = 'curl https://localhost:18080/v1/chat/completions \\\n  -H "Authorization: Bearer ' + plaintextKey.slice(0, 12) + '..." \\\n  -H "Content-Type: application/json" \\\n  -d \'{"model": "' + (models[0]?.slug || "qwen-7b-instruct") + '","messages":[{"role":"user","content":"Merhaba"}]}\'';
+              return (
+              <div className="notice warn stack">
+                <strong>Bu anahtarı şimdi kopyala. Bir daha gösterilmez.</strong>
+                <CopyBox value={plaintextKey} />
+                <div className="card stack">
+                  <strong>Kullanım örneği:</strong>
+                  <pre>{example}</pre>
+                  <div className="muted">OpenAI uyumlu API. Herhangi bir OpenAI SDK ile kullanılabilir.</div>
+                </div>
               </div>
-            )}
+              );
+            })() : null}
+            {keys.length > 0 ? (
+              <>
+                <h2>Anahtarların</h2>
+                <div className="surface">
+                  <table>
+                    <thead><tr><th>Ad</th><th>Ön ek</th><th>Durum</th><th>Oluşturulma</th><th></th></tr></thead>
+                    <tbody>
+                      {keys.map((key) => (
+                        <tr key={key.id}>
+                          <td>{key.name}<div className="muted">{key.id}</div></td>
+                          <td>{key.prefix}</td>
+                          <td><StatusPill value={key.status} /></td>
+                          <td>{new Date(key.created_at).toLocaleString()}</td>
+                          <td>{key.status === "active" ? <button className="button danger" type="button" onClick={() => revoke(key.id)}>İptal et</button> : null}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            ) : null}
+            {models.length > 0 ? (
+              <>
+                <h2>Modeller</h2>
+                <div className="surface">
+                  <table>
+                    <thead><tr><th>Model</th><th>Durum</th><th>İçerik</th><th>Kredi / 1K token</th></tr></thead>
+                    <tbody>
+                      {models.map((model) => (
+                        <tr key={model.id}>
+                          <td><strong>{model.display_name}</strong><div className="muted">{model.slug}</div><div>{model.description}</div></td>
+                          <td><StatusPill value={model.status} /></td>
+                          <td>{model.context_length}</td>
+                          <td>Giriş {model.input_credit_per_1k} / Çıkış {model.output_credit_per_1k}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            ) : null}
           </>
         ) : null}
       </div>
