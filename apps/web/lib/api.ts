@@ -70,8 +70,7 @@ export type Project = {
 };
 
 export type Wallet = {
-  balance_credits: number;
-  reserved_credits: number;
+  balance: number;
   disclaimer?: string;
 };
 
@@ -151,7 +150,7 @@ export type LedgerEntry = {
 };
 
 export type ProviderCreateResponse = {
-  provider: Provider;
+  provider: Omit<Provider, "instance_status" | "last_heartbeat_at" | "model_names">;
   plaintext_token: string;
 };
 
@@ -210,8 +209,7 @@ export type AdminWalletAdjustResponse = {
   wallet: {
     id: string;
     owner_type: string;
-    balance_credits: number;
-    reserved_credits: number;
+    balance: number;
   };
 };
 

@@ -32,8 +32,7 @@ export default function CreditsPage() {
         {!loading && !error ? (
           <>
             <div className="grid">
-              <div className="panel"><div className="muted">Available credits</div><h2>{wallet?.balance_credits ?? 0}</h2></div>
-              <div className="panel"><div className="muted">Reserved credits</div><h2>{wallet?.reserved_credits ?? 0}</h2></div>
+              <div className="panel"><div className="muted">Harcanabilir bakiye</div><h2>{wallet?.balance ?? 0}</h2></div>
             </div>
             <CreditNotice />
             {ledger.length === 0 ? <Empty label="No ledger entries yet." /> : (

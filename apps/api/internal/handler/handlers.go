@@ -127,7 +127,7 @@ func (h *Handler) Wallet(c *fiber.Ctx) error {
 	if err != nil {
 		return httpx.Handle(c, err)
 	}
-	return c.JSON(fiber.Map{"balance_credits": w.BalanceCredits, "reserved_credits": w.ReservedCredits, "disclaimer": "Credits are internal platform credits and cannot be withdrawn or converted to cash in V1."})
+	return c.JSON(fiber.Map{"balance": w.BalanceCredits, "disclaimer": "Kazandığın kredileri API isteklerinde kullanabilirsin."})
 }
 
 func (h *Handler) Ledger(c *fiber.Ctx) error {
@@ -269,7 +269,7 @@ func (h *Handler) AdjustWallet(c *fiber.Ctx) error {
 	if err != nil {
 		return httpx.Handle(c, err)
 	}
-	return c.JSON(fiber.Map{"wallet": fiber.Map{"id": wallet.PublicID, "owner_type": wallet.OwnerType, "balance_credits": wallet.BalanceCredits, "reserved_credits": wallet.ReservedCredits}})
+	return c.JSON(fiber.Map{"wallet": fiber.Map{"id": wallet.PublicID, "owner_type": wallet.OwnerType, "balance": wallet.BalanceCredits}})
 }
 
 func (h *Handler) AdminProviders(c *fiber.Ctx) error {
