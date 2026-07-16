@@ -34,8 +34,8 @@ export default function LoginPage() {
       <section className="hero">
         <div className="stack">
           <Link href="/" className="badge">Nuvonode</Link>
-          <h1>Hesabına giriş yap.</h1>
-          <p className="muted">API anahtarlarını, kullanımını ve bakiyeni görüntüle.</p>
+          <h1>Hesabına gir, ilk isteğine devam et.</h1>
+          <p className="muted">Panelde uygulamanı oluştur, API anahtarını kopyala ve kullanımını tek yerden takip et.</p>
         </div>
         <form className="card stack" onSubmit={submit}>
           <h2>Giriş yap</h2>

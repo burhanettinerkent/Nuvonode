@@ -23,14 +23,14 @@ export default function AdminProviderModelsPage() {
   useEffect(load, []);
 
   async function act(id: string, action: "approve" | "reject") {
-    if (action === "reject" && !confirm("Reject this provider model advertisement?")) return;
+    if (action === "reject" && !confirm("Bu modeli reddetmek istiyor musun?")) return;
     setError(null);
     setSuccess("");
     try {
       if (action === "approve") await approveProviderModel(id);
       if (action === "reject") await rejectProviderModel(id);
       setAds((items) => items.filter((item) => item.id !== id));
-      setSuccess(action === "approve" ? "Provider model approved." : "Provider model rejected.");
+      setSuccess(action === "approve" ? "Model onaylandı." : "Model reddedildi.");
     } catch (err) {
       setError(err);
     }
@@ -39,27 +39,27 @@ export default function AdminProviderModelsPage() {
   return (
     <Shell>
       <div className="stack">
-        <h1>Pending Provider Models</h1>
+        <h1>Bekleyen model onayları</h1>
         {error ? <ErrorMessage error={error} /> : null}
         {success ? <SuccessMessage message={success} /> : null}
-        {loading ? <Loading /> : null}
-        {!loading && ads.length === 0 ? <Empty label="No pending provider model advertisements." /> : null}
+        {loading ? <Loading label="Bekleyen modeller yükleniyor..." /> : null}
+        {!loading && ads.length === 0 ? <Empty label="Bekleyen model onayı yok." /> : null}
         {ads.length > 0 ? (
           <div className="surface">
             <table>
-              <thead><tr><th>Runtime model</th><th>Provider</th><th>Runtime</th><th>Digest</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+              <thead><tr><th>Çalışan model</th><th>Node</th><th>Ortam</th><th>Özet</th><th>Durum</th><th>Tarih</th><th>İşlem</th></tr></thead>
               <tbody>
                 {ads.map((ad) => (
                   <tr key={ad.id}>
-                    <td>{ad.runtime_model_name}<div className="muted">{ad.id}</div></td>
-                    <td>{ad.provider_id}</td>
+                    <td>{ad.runtime_model_name}</td>
+                    <td className="muted">{ad.provider_id}</td>
                     <td>{ad.runtime}</td>
                     <td>{ad.local_digest || "—"}</td>
                     <td><StatusPill value={ad.status} /></td>
                     <td>{new Date(ad.created_at).toLocaleString()}</td>
                     <td className="row">
-                      <button className="button" type="button" onClick={() => act(ad.id, "approve")}>Approve</button>
-                      <button className="button secondary" type="button" onClick={() => act(ad.id, "reject")}>Reject</button>
+                      <button className="button" type="button" onClick={() => act(ad.id, "approve")}>Onayla</button>
+                      <button className="button secondary" type="button" onClick={() => act(ad.id, "reject")}>Reddet</button>
                     </td>
                   </tr>
                 ))}

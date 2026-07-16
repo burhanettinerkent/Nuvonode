@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { CopyBox } from "@/components/CopyBox";
 import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
+import { CopyBox } from "@/components/CopyBox";
 import { createAPIKey, listAPIKeys, listModels, listProjects, revokeAPIKey, type APIKey, type Model, type Project } from "@/lib/api";
 
 export default function APIPage() {
@@ -37,7 +38,7 @@ export default function APIPage() {
     }
     listAPIKeys(projectID)
       .then((res) => setKeys(res.api_keys))
-      .catch(setError)
+      .catch(setError);
   }, [projectID]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -50,7 +51,7 @@ export default function APIPage() {
       const res = await createAPIKey(projectID, name || "Varsayılan");
       setKeys((items) => [res.api_key, ...items]);
       setPlaintextKey(res.plaintext_key);
-      setSuccess("API anahtarı oluşturuldu. Kopyala, bir daha gösterilmez.");
+      setSuccess("API anahtarı oluşturuldu. Şimdi kopyala ve ilk isteğini çalıştır.");
       setName("");
     } catch (err) {
       setError(err);
@@ -60,7 +61,7 @@ export default function APIPage() {
   }
 
   async function revoke(keyID: string) {
-    if (!confirm("Bu anahtarı iptal et? Mevcut istemciler çalışmaz.")) return;
+    if (!confirm("Bu anahtarı iptal et? Bu anahtarı kullanan istekler durur.")) return;
     setError(null);
     setSuccess("");
     try {
@@ -72,14 +73,29 @@ export default function APIPage() {
     }
   }
 
+  const example = plaintextKey
+    ? 'curl http://localhost:18080/v1/chat/completions \\\n  -H "Authorization: Bearer ' + plaintextKey + '" \\\n  -H "Content-Type: application/json" \\\n  -d \'{"model":"' + (models[0]?.slug || "qwen-7b-instruct") + '","messages":[{"role":"user","content":"Merhaba"}]}\''
+    : "";
+
   return (
     <Shell>
       <div className="stack">
-        <h1>API</h1>
+        <div className="stack">
+          <h1>API</h1>
+          <p className="muted">Bir uygulama seç, anahtarını oluştur ve örnek isteği çalıştır. İlk yanıtını aldıktan sonra sonucu kullanım sayfanda görebilirsin.</p>
+        </div>
         {error ? <ErrorMessage error={error} /> : null}
         {success ? <SuccessMessage message={success} /> : null}
-        {loading ? <Loading /> : null}
-        {!loading && projects.length === 0 ? <Empty label="Henüz bir uygulaman yok. Önce proje oluştur." /> : null}
+        {loading ? <Loading label="API alanı hazırlanıyor..." /> : null}
+        {!loading && projects.length === 0 ? (
+          <div className="card stack">
+            <h2>Önce bir uygulama oluştur</h2>
+            <p className="muted">API anahtarın bir uygulamaya bağlı çalışır. İlk adım olarak uygulama oluştur, sonra burada anahtarını ekle.</p>
+            <div className="row">
+              <Link className="button" href="/dashboard/projects">Uygulama oluştur</Link>
+            </div>
+          </div>
+        ) : null}
         {projects.length > 0 ? (
           <>
             <div className="card stack">
@@ -97,20 +113,20 @@ export default function APIPage() {
                 <button className="button" disabled={saving || !projectID} type="submit">{saving ? "Oluşturuluyor..." : "API anahtarı oluştur"}</button>
               </form>
             </div>
-            {plaintextKey ? (() => {
-              const example = 'curl https://localhost:18080/v1/chat/completions \\\n  -H "Authorization: Bearer ' + plaintextKey.slice(0, 12) + '..." \\\n  -H "Content-Type: application/json" \\\n  -d \'{"model": "' + (models[0]?.slug || "qwen-7b-instruct") + '","messages":[{"role":"user","content":"Merhaba"}]}\'';
-              return (
+            {plaintextKey ? (
               <div className="notice warn stack">
                 <strong>Bu anahtarı şimdi kopyala. Bir daha gösterilmez.</strong>
                 <CopyBox value={plaintextKey} />
                 <div className="card stack">
-                  <strong>Kullanım örneği:</strong>
-                  <pre>{example}</pre>
-                  <div className="muted">OpenAI uyumlu API. Herhangi bir OpenAI SDK ile kullanılabilir.</div>
+                  <strong>İlk istek için örnek komut</strong>
+                  <CopyBox value={example} />
+                  <div className="muted">Komutu çalıştırdıktan sonra sonucu kullanım sayfanda görebilirsin.</div>
+                  <div className="row">
+                    <Link className="button secondary" href="/dashboard/usage">Kullanımı aç</Link>
+                  </div>
                 </div>
               </div>
-              );
-            })() : null}
+            ) : null}
             {keys.length > 0 ? (
               <>
                 <h2>Anahtarların</h2>
@@ -120,7 +136,7 @@ export default function APIPage() {
                     <tbody>
                       {keys.map((key) => (
                         <tr key={key.id}>
-                          <td>{key.name}<div className="muted">{key.id}</div></td>
+                          <td>{key.name}</td>
                           <td>{key.prefix}</td>
                           <td><StatusPill value={key.status} /></td>
                           <td>{new Date(key.created_at).toLocaleString()}</td>
@@ -131,17 +147,19 @@ export default function APIPage() {
                   </table>
                 </div>
               </>
-            ) : null}
+            ) : (
+              !plaintextKey && !loading ? <Empty label="Henüz API anahtarın yok. Bir anahtar oluşturup ilk isteğini hemen çalıştırabilirsin." /> : null
+            )}
             {models.length > 0 ? (
               <>
-                <h2>Modeller</h2>
+                <h2>Başlamak için modeller</h2>
                 <div className="surface">
                   <table>
-                    <thead><tr><th>Model</th><th>Durum</th><th>İçerik</th><th>Kredi / 1K token</th></tr></thead>
+                    <thead><tr><th>Model</th><th>Durum</th><th>Bağlam</th><th>Kredi / 1K token</th></tr></thead>
                     <tbody>
                       {models.map((model) => (
                         <tr key={model.id}>
-                          <td><strong>{model.display_name}</strong><div className="muted">{model.slug}</div><div>{model.description}</div></td>
+                          <td><strong>{model.display_name}</strong><div className="muted">{model.description}</div><div className="muted">{model.slug}</div></td>
                           <td><StatusPill value={model.status} /></td>
                           <td>{model.context_length}</td>
                           <td>Giriş {model.input_credit_per_1k} / Çıkış {model.output_credit_per_1k}</td>
@@ -151,7 +169,9 @@ export default function APIPage() {
                   </table>
                 </div>
               </>
-            ) : null}
+            ) : (
+              !loading ? <Empty label="Şu anda kullanılabilir model görünmüyor. Onaylı ve çevrimiçi node geldiğinde burada listelenir." /> : null
+            )}
           </>
         ) : null}
       </div>

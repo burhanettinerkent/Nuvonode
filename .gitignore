@@ -12,6 +12,10 @@ bin/
 .tmp/
 __debug_bin
 
+# generated frontend/build artifacts
+*.tsbuildinfo
+apps/**/package-lock.json
+
 # local agent/session state
 .claude/
 PROJECT_STATE.md
