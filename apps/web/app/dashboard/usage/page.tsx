@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading } from "@/components/State";
@@ -19,6 +20,8 @@ export default function UsagePage() {
   const [to, setTo] = useState("");
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
+
+  const projectNames = useMemo(() => Object.fromEntries(projects.map((project) => [project.id, project.name])), [projects]);
 
   function load(filter = { projectID, model, from, to }) {
     setLoading(true);
@@ -47,7 +50,10 @@ export default function UsagePage() {
   return (
     <Shell>
       <div className="stack">
-        <h1>Kullanım</h1>
+        <div className="stack">
+          <h1>Kullanım</h1>
+          <p className="muted">İsteklerin burada görünür. Hangi uygulamanın hangi modeli çağırdığını, ne kadar kredi harcadığını ve sonucun ne olduğunu hızlıca görebilirsin.</p>
+        </div>
         <form className="card grid" onSubmit={submit}>
           <div className="field">
             <label htmlFor="project">Uygulama</label>
@@ -57,7 +63,7 @@ export default function UsagePage() {
             </select>
           </div>
           <div className="field">
-            <label htmlFor="model">Model</label>
+            <label htmlFor="model">Model adı</label>
             <input id="model" value={model} onChange={(event) => setModel(event.target.value)} placeholder="Tüm modeller" />
           </div>
           <div className="field">
@@ -71,25 +77,60 @@ export default function UsagePage() {
           <button className="button" type="submit">Filtrele</button>
         </form>
         {error ? <ErrorMessage error={error} /> : null}
-        {loading ? <Loading /> : null}
-        {!loading && usage.length === 0 ? <Empty label="Henüz hiç kullanım kaydı yok." /> : null}
-        {usage.length > 0 ? (
-          <div className="surface">
-            <table>
-              <thead><tr><th>Model</th><th>Token</th><th>Kredi</th><th>Durum</th><th>Tarih</th></tr></thead>
-              <tbody>
-                {usage.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.model_slug}</td>
-                    <td>{row.total_tokens} <span className="muted">(giriş {row.input_tokens} / çıkış {row.output_tokens})</span></td>
-                    <td>{row.cost_credits}</td>
-                    <td><StatusPill value={row.status} /></td>
-                    <td>{new Date(row.created_at).toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {loading ? <Loading label="Kullanım hazırlanıyor..." /> : null}
+        {!loading && usage.length === 0 ? (
+          <div className="card stack">
+            <Empty label="Henüz hiç API isteği görünmüyor." />
+            <div className="muted">Önce API sayfasından anahtar oluştur, örnek komutu çalıştır, sonra sonucu burada gör.</div>
+            <div className="row">
+              <Link className="button" href="/dashboard/api-keys">API sayfasına git</Link>
+            </div>
           </div>
+        ) : null}
+        {usage.length > 0 ? (
+          <>
+            <div className="surface desktop-only">
+              <table>
+                <thead><tr><th>Uygulama</th><th>Model</th><th>Kredi</th><th>Durum</th><th>Tarih</th></tr></thead>
+                <tbody>
+                  {usage.map((row) => (
+                    <tr key={row.id}>
+                      <td>{projectNames[row.project_id] || "—"}</td>
+                      <td>
+                        <strong>{row.model_slug}</strong>
+                        <div className="muted">{row.total_tokens} token</div>
+                        <div className="muted">giriş {row.input_tokens} / çıkış {row.output_tokens}</div>
+                        {row.latency_ms ? <div className="muted">yanıt {row.latency_ms} ms</div> : null}
+                      </td>
+                      <td>{row.cost_credits}</td>
+                      <td><StatusPill value={row.status} /></td>
+                      <td>{new Date(row.created_at).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mobile-only mobile-list">
+              {usage.map((row) => (
+                <div key={row.id} className="mobile-item">
+                  <div className="row">
+                    <strong>{row.model_slug}</strong>
+                    <StatusPill value={row.status} />
+                  </div>
+                  <div className="meta muted">
+                    <div>Uygulama: {projectNames[row.project_id] || "—"}</div>
+                    <div>{row.total_tokens} token</div>
+                    <div>Giriş {row.input_tokens} / Çıkış {row.output_tokens}</div>
+                    {row.latency_ms ? <div>Yanıt {row.latency_ms} ms</div> : null}
+                  </div>
+                  <div className="row">
+                    <span>Kredi {row.cost_credits}</span>
+                    <span className="muted">{new Date(row.created_at).toLocaleString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : null}
       </div>
     </Shell>

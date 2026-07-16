@@ -28,16 +28,16 @@ export default function AdminPage() {
   return (
     <Shell>
       <div className="stack">
-        <h1>Admin</h1>
-        {loading ? <Loading /> : null}
+        <h1>Yönetim</h1>
+        {loading ? <Loading label="Yönetim özeti hazırlanıyor..." /> : null}
         {error ? <ErrorMessage error={error} /> : null}
         {!loading && !error ? (
           <div className="grid">
-            <div className="panel"><div className="muted">Providers</div><h2>{providers.length}</h2></div>
-            <div className="panel"><div className="muted">Pending providers</div><h2>{providers.filter((p) => p.approval_status === "pending").length}</h2></div>
-            <div className="panel"><div className="muted">Models</div><h2>{models.length}</h2></div>
-            <div className="panel"><div className="muted">Jobs</div><h2>{jobs.length}</h2></div>
-            <div className="panel"><div className="muted">Usage records</div><h2>{usage.length}</h2></div>
+            <div className="panel"><div className="muted">Node'lar</div><h2>{providers.length}</h2></div>
+            <div className="panel"><div className="muted">Bekleyen node'lar</div><h2>{providers.filter((p) => p.approval_status === "pending").length}</h2></div>
+            <div className="panel"><div className="muted">Modeller</div><h2>{models.length}</h2></div>
+            <div className="panel"><div className="muted">İstekler</div><h2>{jobs.length}</h2></div>
+            <div className="panel"><div className="muted">Kullanım kayıtları</div><h2>{usage.length}</h2></div>
           </div>
         ) : null}
       </div>

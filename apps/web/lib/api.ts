@@ -44,7 +44,7 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
 
   if (!res.ok) {
     const detail = body.error || {};
-    throw new APIError(detail.message || "Request failed.", detail.code || "request_failed", detail.request_id || "req_unknown", res.status);
+    throw new APIError(detail.message || "İstek başarısız oldu.", detail.code || "request_failed", detail.request_id || "req_unknown", res.status);
   }
 
   return body as T;

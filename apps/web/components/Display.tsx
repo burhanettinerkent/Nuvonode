@@ -2,7 +2,7 @@ type DisplayValue = string | boolean | number | null | undefined;
 
 export function formatLabel(value: DisplayValue) {
   if (value === null || value === undefined || value === "") return "—";
-  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "boolean") return value ? "Evet" : "Hayır";
   return String(value)
     .replace(/_/g, " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase());

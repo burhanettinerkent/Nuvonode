@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { Shell } from "@/components/Shell";
 import { ErrorMessage } from "@/components/State";
-import { adjustAdminWallet, listAdminUsage, type AdminWalletAdjustResponse } from "@/lib/api";
+import { adjustAdminWallet, type AdminWalletAdjustResponse } from "@/lib/api";
 
 export default function AdminCreditAdjustmentPage() {
   const [email, setEmail] = useState("");
@@ -13,21 +13,6 @@ export default function AdminCreditAdjustmentPage() {
   const [result, setResult] = useState<AdminWalletAdjustResponse | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [saving, setSaving] = useState(false);
-  const [foundUser, setFoundUser] = useState<string>("");
-
-  async function lookupUser() {
-    setError(null);
-    setFoundUser("");
-    try {
-      const usage = await listAdminUsage();
-      for (const row of usage.usage) {
-        if (row.user_id) {
-          // use first found user id as lookup stub
-        }
-      }
-    } catch {}
-  }
-
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const amountCredits = Number(amount);
@@ -57,7 +42,7 @@ export default function AdminCreditAdjustmentPage() {
       <div className="stack">
         <h1>Kredi düzenleme</h1>
         <div className="notice warn">
-          Kredi düzenlemeleri dahili platform kredilerini etkiler. Her işlem ledger ve denetim kaydına yazılır. Pozitif miktar kullanıcıya kredi ekler, negatif miktar keser.
+          Kredi düzenlemeleri dahili platform kredilerini etkiler. Her işlem hareket ve denetim kaydına yazılır. Pozitif miktar kullanıcıya kredi ekler, negatif miktar keser.
         </div>
         <form className="card stack" onSubmit={submit}>
           <div className="field">
@@ -74,12 +59,12 @@ export default function AdminCreditAdjustmentPage() {
           </div>
           <label className="row">
             <input checked={confirmed} required type="checkbox" onChange={(event) => setConfirmed(event.target.checked)} />
-            Bu işlemin ledger ve denetim kaydına yazılacağını onaylıyorum.
+            Bu işlemin hareket ve denetim kaydına yazılacağını onaylıyorum.
           </label>
           <button className="button" disabled={saving || !confirmed} type="submit">{saving ? "Düzenleniyor..." : "Kredi düzenle"}</button>
         </form>
         {error ? <ErrorMessage error={error} /> : null}
-        {result ? <div className="notice">Bakiye: {result.wallet.balance}</div> : null}
+        {result ? <div className="notice">Güncel bakiye: {result.wallet.balance}</div> : null}
       </div>
     </Shell>
   );

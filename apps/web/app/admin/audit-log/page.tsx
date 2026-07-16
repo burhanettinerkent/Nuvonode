@@ -21,21 +21,21 @@ export default function AdminAuditLogPage() {
   return (
     <Shell>
       <div className="stack">
-        <h1>Audit Log</h1>
+        <h1>Denetim</h1>
         {error ? <ErrorMessage error={error} /> : null}
-        {loading ? <Loading /> : null}
-        {!loading && entries.length === 0 ? <Empty label="No audit log entries yet." /> : null}
+        {loading ? <Loading label="Denetim kayıtları yükleniyor..." /> : null}
+        {!loading && entries.length === 0 ? <Empty label="Henüz denetim kaydı yok." /> : null}
         {entries.length > 0 ? (
           <div className="surface">
             <table>
-              <thead><tr><th>Action</th><th>Actor</th><th>Target</th><th>Target ID</th><th>Created</th></tr></thead>
+              <thead><tr><th>İşlem</th><th>Yapan</th><th>Hedef tür</th><th>Hedef</th><th>Tarih</th></tr></thead>
               <tbody>
                 {entries.map((entry) => (
                   <tr key={entry.id}>
                     <td><StatusPill value={entry.action} /></td>
-                    <td className="muted">{entry.actor_user_id}</td>
+                    <td className="muted">Yönetici hesabı</td>
                     <td>{entry.target_type || "—"}</td>
-                    <td className="muted">{entry.target_id || "—"}</td>
+                    <td className="muted">Kimlik yönetim kayıtlarında tutulur</td>
                     <td>{new Date(entry.created_at).toLocaleString()}</td>
                   </tr>
                 ))}

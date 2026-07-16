@@ -34,8 +34,8 @@ export default function RegisterPage() {
       <section className="hero">
         <div className="stack">
           <Link href="/" className="badge">Nuvonode</Link>
-          <h1>API anahtarı al, hemen başla.</h1>
-          <p className="muted">Bir API anahtarı ile tüm modelleri çağır. İstersen sonra node çalıştırıp kredi kazanmaya başla.</p>
+          <h1>Hesap oluştur, API anahtarını al, hemen başla.</h1>
+          <p className="muted">Kayıttan sonra panelde uygulamanı oluşturabilir, anahtarını kopyalayabilir ve ilk isteğini çalıştırabilirsin.</p>
         </div>
         <form className="card stack" onSubmit={submit}>
           <h2>Hesap oluştur</h2>

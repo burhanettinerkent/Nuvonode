@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { StatusPill } from "@/components/Display";
 import { Shell } from "@/components/Shell";
@@ -33,13 +34,13 @@ export default function ProjectsPage() {
     try {
       const monthlyLimit = limit.trim() ? Number(limit) : null;
       if (monthlyLimit !== null && !Number.isFinite(monthlyLimit)) {
-        throw new Error("Enter a valid monthly credit limit.");
+        throw new Error("Geçerli bir harcama limiti gir.");
       }
       const res = await createProject(name, monthlyLimit);
       setProjects((items) => [res.project, ...items]);
       setName("");
       setLimit("");
-      setSuccess("Project created.");
+      setSuccess("Uygulama oluşturuldu. Sıradaki adım: API anahtarı oluştur.");
     } catch (err) {
       setError(err);
     } finally {
@@ -50,33 +51,43 @@ export default function ProjectsPage() {
   return (
     <Shell>
       <div className="stack">
-        <h1>Projects</h1>
+        <div className="stack">
+          <h1>Uygulamalar</h1>
+          <p className="muted">İlk API anahtarını oluşturmadan önce bir uygulama ekle. Böylece isteklerini ayrı ayrı takip edebilirsin.</p>
+        </div>
         <form className="card stack" onSubmit={submit}>
-          <h2>Create project</h2>
+          <h2>Yeni uygulama oluştur</h2>
           <div className="field">
-            <label htmlFor="project-name">Name</label>
-            <input id="project-name" required value={name} onChange={(event) => setName(event.target.value)} />
+            <label htmlFor="project-name">Uygulama adı</label>
+            <input id="project-name" required value={name} onChange={(event) => setName(event.target.value)} placeholder="Örn: Web uygulamam" />
           </div>
           <div className="field">
-            <label htmlFor="project-limit">Monthly credit limit</label>
-            <input id="project-limit" min="0" type="number" value={limit} onChange={(event) => setLimit(event.target.value)} placeholder="No limit" />
+            <label htmlFor="project-limit">Harcama limiti</label>
+            <input id="project-limit" min="0" type="number" value={limit} onChange={(event) => setLimit(event.target.value)} placeholder="İstersen boş bırak" />
           </div>
-          <button className="button" disabled={saving} type="submit">{saving ? "Creating..." : "Create project"}</button>
+          <button className="button" disabled={saving} type="submit">{saving ? "Oluşturuluyor..." : "Uygulama oluştur"}</button>
         </form>
         {error ? <ErrorMessage error={error} /> : null}
-        {success ? <SuccessMessage message={success} /> : null}
-        {loading ? <Loading /> : null}
-        {!loading && projects.length === 0 ? <Empty label="No projects yet." /> : null}
+        {success ? (
+          <div className="stack">
+            <SuccessMessage message={success} />
+            <div className="row">
+              <Link className="button" href="/dashboard/api-keys">API anahtarına geç</Link>
+            </div>
+          </div>
+        ) : null}
+        {loading ? <Loading label="Uygulamalar yükleniyor..." /> : null}
+        {!loading && projects.length === 0 ? <Empty label="Henüz uygulaman yok. Önce bir uygulama oluştur, sonra API anahtarını ekleyip ilk isteğini yap." /> : null}
         {projects.length > 0 ? (
           <div className="surface">
             <table>
-              <thead><tr><th>Name</th><th>Status</th><th>Monthly limit</th><th>Current spend</th><th>Created</th></tr></thead>
+              <thead><tr><th>Uygulama</th><th>Durum</th><th>Harcama limiti</th><th>Bu ay</th><th>Oluşturulma</th></tr></thead>
               <tbody>
                 {projects.map((project) => (
                   <tr key={project.id}>
-                    <td>{project.name}<div className="muted">{project.id}</div></td>
+                    <td>{project.name}</td>
                     <td><StatusPill value={project.status} /></td>
-                    <td>{project.monthly_credit_limit ?? "No limit"}</td>
+                    <td>{project.monthly_credit_limit ?? "Sınır yok"}</td>
                     <td>{project.current_month_spend}</td>
                     <td>{new Date(project.created_at).toLocaleString()}</td>
                   </tr>

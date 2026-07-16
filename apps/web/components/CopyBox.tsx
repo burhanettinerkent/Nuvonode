@@ -20,10 +20,10 @@ export function CopyBox({ value }: { value: string }) {
     <div className="stack">
       <pre>{value}</pre>
       <button className="button secondary" type="button" onClick={copy}>
-        {status === "copied" ? "Copied" : status === "error" ? "Copy failed" : "Copy"}
+        {status === "copied" ? "Kopyalandı" : status === "error" ? "Kopyalama başarısız" : "Kopyala"}
       </button>
       <div aria-live="polite" className="muted">
-        {status === "copied" ? "Copied to clipboard." : status === "error" ? "Clipboard access failed. Select and copy manually." : ""}
+        {status === "copied" ? "Panoya kopyalandı." : status === "error" ? "Panoya erişilemedi. Metni seçip elle kopyala." : ""}
       </div>
     </div>
   );

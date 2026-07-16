@@ -34,7 +34,7 @@ export default function AdminReviewPage() {
         <h1>İnceleme</h1>
         {error ? <ErrorMessage error={error} /> : null}
         {success ? <SuccessMessage message={success} /> : null}
-        {loading ? <Loading /> : null}
+        {loading ? <Loading label="İnceleme kuyruğu hazırlanıyor..." /> : null}
 
         {!loading ? (
           <>
@@ -48,14 +48,14 @@ export default function AdminReviewPage() {
             </div>
 
             {tab === "nodes" ? (
-              providers.length === 0 ? <Empty label="Hiç node yok." /> : (
+              providers.length === 0 ? <Empty label="Henüz incelenecek node yok." /> : (
                 <div className="surface">
                   <table>
                     <thead><tr><th>Node</th><th>Onay</th><th>Durum</th><th>Bölge</th><th>Oluşturulma</th><th>İşlem</th></tr></thead>
                     <tbody>
                       {providers.map((provider) => (
                         <tr key={provider.id}>
-                          <td>{provider.name}<div className="muted">{provider.id}</div></td>
+                          <td>{provider.name}<div className="muted">Kimlik yönetim tarafında saklı</div></td>
                           <td><StatusPill value={provider.approval_status} /></td>
                           <td><StatusPill value={provider.status} /></td>
                           <td>{provider.region_hint || "—"}</td>
@@ -82,7 +82,7 @@ export default function AdminReviewPage() {
                       {ads.map((ad) => (
                         <tr key={ad.id}>
                           <td>{ad.runtime_model_name}</td>
-                          <td className="muted">{ad.provider_id}</td>
+                          <td className="muted">Node kaydı yönetim tarafında tutulur</td>
                           <td>{ad.runtime}</td>
                           <td className="row">
                             <button className="button" onClick={() => approveProviderModel(ad.id).then(load).catch(setError)}>Onayla</button>
