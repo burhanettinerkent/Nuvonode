@@ -1,8 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { Shell } from "@/components/Shell";
-import { ErrorMessage } from "@/components/State";
+import { ErrorMessage, SuccessMessage } from "@/components/State";
 import { adjustAdminWallet, type AdminWalletAdjustResponse } from "@/lib/api";
 
 export default function AdminCreditAdjustmentPage() {
@@ -13,6 +12,7 @@ export default function AdminCreditAdjustmentPage() {
   const [result, setResult] = useState<AdminWalletAdjustResponse | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [saving, setSaving] = useState(false);
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const amountCredits = Number(amount);
@@ -38,13 +38,24 @@ export default function AdminCreditAdjustmentPage() {
   }
 
   return (
-    <Shell>
-      <div className="stack">
-        <h1>Kredi düzenleme</h1>
-        <div className="notice warn">
-          Kredi düzenlemeleri dahili platform kredilerini etkiler. Her işlem hareket ve denetim kaydına yazılır. Pozitif miktar kullanıcıya kredi ekler, negatif miktar keser.
+    <div className="stack">
+      <section className="card stack split-panel" style={{ padding: 32 }}>
+        <div className="stack">
+          <span className="eyebrow">Kredi düzeltmesi</span>
+          <h1>Bakiyeyi kontrollü şekilde düzenle.</h1>
+          <p className="muted" style={{ maxWidth: 620 }}>Bu ekran istisna durumlar içindir. Her işlem hareket kaydına ve denetime yazılır.</p>
         </div>
+        <div className="notice warn">Bu kredi dahili platform kredisidir. Nakit veya çekim sistemi değildir.</div>
+      </section>
+
+      <section className="split-panel">
         <form className="card stack" onSubmit={submit}>
+          <div className="surface-head">
+            <div>
+              <h2>Kredi düzenle</h2>
+              <p className="muted">Email, miktar ve sebep olmadan ilerleme yok.</p>
+            </div>
+          </div>
           <div className="field">
             <label htmlFor="user-email">Kullanıcı email</label>
             <input id="user-email" required type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="ornek@email.com" />
@@ -63,9 +74,19 @@ export default function AdminCreditAdjustmentPage() {
           </label>
           <button className="button" disabled={saving || !confirmed} type="submit">{saving ? "Düzenleniyor..." : "Kredi düzenle"}</button>
         </form>
-        {error ? <ErrorMessage error={error} /> : null}
-        {result ? <div className="notice">Güncel bakiye: {result.wallet.balance}</div> : null}
-      </div>
-    </Shell>
+
+        <div className="card stack secondary-card">
+          <h2>Operasyon notu</h2>
+          <ul className="checklist">
+            <li><strong>Hareket kaydı zorunlu</strong><span className="muted">Bu ekran yalnızca kayıtlı düzeltme için vardır.</span></li>
+            <li><strong>Sebep zorunlu</strong><span className="muted">Destek ve denetim için görünür kalır.</span></li>
+            <li><strong>Dikkatli kullan</strong><span className="muted">Normal ürün akışı için değil, istisna durumlar için kullan.</span></li>
+          </ul>
+          {result ? <SuccessMessage message={`Güncel bakiye: ${result.wallet.balance}`} /> : <div className="muted">Sonuç burada görünür.</div>}
+        </div>
+      </section>
+
+      {error ? <ErrorMessage error={error} hint="Düzenleme yapılamadı. Bilgileri kontrol edip tekrar dene." /> : null}
+    </div>
   );
 }

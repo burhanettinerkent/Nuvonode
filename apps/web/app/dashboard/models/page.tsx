@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { StatusPill } from "@/components/Display";
-import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading } from "@/components/State";
 import { listModels, type Model } from "@/lib/api";
 
@@ -19,35 +19,56 @@ export default function ModelsPage() {
   }, []);
 
   return (
-    <Shell>
-      <div className="stack">
-        <div className="stack">
-          <h1>Modeller</h1>
-          <p className="muted">İlk isteğinde kullanabileceğin modeller burada görünür. API sayfasındaki örnek komut için bu listedeki bir modeli seçebilirsin.</p>
-        </div>
-        {error ? <ErrorMessage error={error} /> : null}
-        {loading ? <Loading label="Modeller yükleniyor..." /> : null}
-        {!loading && models.length === 0 ? <Empty label="Şu anda kullanılabilir model görünmüyor." /> : null}
-        {models.length > 0 ? (
-          <div className="surface">
-            <table>
-              <thead><tr><th>Model</th><th>Durum</th><th>Bağlam</th><th>Kredi / 1K token</th><th>Topluluk</th><th>VRAM</th></tr></thead>
-              <tbody>
-                {models.map((model) => (
-                  <tr key={model.id}>
-                    <td><strong>{model.display_name}</strong><div className="muted">{model.slug}</div><div>{model.description}</div></td>
-                    <td><StatusPill value={model.status} /></td>
-                    <td>{model.context_length}</td>
-                    <td>Giriş {model.input_credit_per_1k} / Çıkış {model.output_credit_per_1k}</td>
-                    <td><StatusPill value={model.community_allowed ? "allowed" : "not_allowed"} /></td>
-                    <td>{model.min_vram_mb || "—"} / {model.recommended_vram_mb || "—"} MB</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    <div className="stack">
+      <section className="card stack" style={{ padding: 32 }}>
+        <div className="split-panel">
+          <div className="stack">
+            <span className="eyebrow">Modeller</span>
+            <h1>İlk isteğin için model seç.</h1>
+            <p className="muted" style={{ maxWidth: 620 }}>API adı, kısa açıklama ve temel kredi bilgisi burada görünür.</p>
+            <div className="row">
+              <Link className="button" href="/dashboard/api-keys">API'ye dön</Link>
+              <Link className="button secondary" href="/dashboard/usage">İstekleri gör</Link>
+            </div>
           </div>
-        ) : null}
-      </div>
-    </Shell>
+          <div className="card stack secondary-card" style={{ padding: 22 }}>
+            <h2>Ne lazım?</h2>
+            <ul className="checklist">
+              <li><strong>API adı</strong><span className="muted">İstekte bu adı kullan.</span></li>
+              <li><strong>Kısa açıklama</strong><span className="muted">Hızlıca seçim yap.</span></li>
+              <li><strong>Kredi bilgisi</strong><span className="muted">Tahmini maliyeti gör.</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {error ? <ErrorMessage error={error} hint="Model listesi alınamadı. Biraz sonra tekrar dene." /> : null}
+      {loading ? <Loading label="Modeller yükleniyor..." hint="Kullanılabilir modeller hazırlanıyor." /> : null}
+      {!loading && models.length === 0 ? <Empty label="Şu anda kullanılabilir model görünmüyor." hint="Biraz sonra tekrar kontrol et." /> : null}
+      {models.length > 0 ? (
+        <section className="grid summary-grid">
+          {models.map((model) => (
+            <div key={model.id} className="card stack">
+              <div className="surface-head">
+                <div>
+                  <h2>{model.display_name}</h2>
+                  <p className="muted">API adı: {model.slug}</p>
+                </div>
+                {model.status !== "active" ? <StatusPill value={model.status} /> : null}
+              </div>
+              <p className="muted">{model.description}</p>
+              <div className="row">
+                <span className="pill">Giriş {model.input_credit_per_1k}</span>
+                <span className="pill">Çıkış {model.output_credit_per_1k}</span>
+              </div>
+              <div className="stack muted">
+                <div>Bağlam: {model.context_length}</div>
+                <div>{model.community_allowed ? "Topluluk node'larında çalışabilir." : "Sadece onaylı node'larda çalışır."}</div>
+              </div>
+            </div>
+          ))}
+        </section>
+      ) : null}
+    </div>
   );
 }

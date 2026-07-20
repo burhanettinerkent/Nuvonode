@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Shell } from "@/components/Shell";
+import { CreditNotice } from "@/components/CreditNotice";
 import { Empty, ErrorMessage, Loading } from "@/components/State";
 import { getWallet, listLedger, type LedgerEntry, type Wallet } from "@/lib/api";
 
@@ -11,9 +11,9 @@ function movementLabel(entryType: string) {
     case "grant":
       return "Başlangıç kredisi";
     case "reserve":
-      return "İstek için ayrıldı";
+      return "İstek bekliyor";
     case "release_reserve":
-      return "Ayrılan kredi geri bırakıldı";
+      return "Kullanılmayan kredi geri döndü";
     case "debit_usage":
       return "API kullanımı";
     case "credit_provider_reward":
@@ -36,12 +36,12 @@ function movementNote(entry: LedgerEntry) {
     case "starting_free_credits":
       return "Hesap açılışında verilen kredi";
     case "chat_completion_reservation":
-      return "İstek gönderilmeden önce ayrılan kredi";
+      return "İstek tamamlanana kadar geçici olarak ayrıldı";
     case "release_usage_reservation":
     case "provider_unavailable_release":
     case "provider_failed_release":
     case "settlement_failed_release":
-      return "Ayrılan kredi tekrar bakiyeye döndü";
+      return "Kullanılmayan kısım tekrar bakiyeye döndü";
     case "chat_completion_usage":
       return "Tamamlanan API isteğinin maliyeti";
     default:
@@ -93,73 +93,84 @@ export default function BalancePage() {
     at: new Date(entry.created_at).toLocaleString(),
   })), [ledger]);
 
-
   return (
-    <Shell>
-      <div className="stack">
-        <div className="stack">
-          <h1>Bakiye</h1>
-          <p className="muted">Node çalıştırarak kredi kazan, aynı kredileri API isteklerinde harca.</p>
-        </div>
-        {error ? <ErrorMessage error={error} /> : null}
-        {loading ? <Loading label="Bakiye hazırlanıyor..." /> : null}
-        {!loading && !error ? (
-          <>
-            <div className="grid">
-              <div className="panel"><div className="muted">Harcanabilir bakiye</div><h2>{wallet?.balance ?? 0}</h2></div>
-              <div className="panel"><div className="muted">Node ve eklenen krediler</div><h2>{earned}</h2></div>
-              <div className="panel"><div className="muted">API kullanımı</div><h2>{spent}</h2></div>
+    <div className="stack">
+      <section className="card stack" style={{ padding: 32 }}>
+        <div className="split-panel">
+          <div className="stack">
+            <span className="eyebrow">Bakiye</span>
+            <h1>Bakiyeni ve son hareketleri gör.</h1>
+            <p className="muted" style={{ maxWidth: 620 }}>Kazandığın kredi de kullandığın kredi de aynı geçmişte görünür.</p>
+            <div className="row">
+              <Link className="button" href="/dashboard/api-keys">API'yi aç</Link>
+              <Link className="button secondary" href="/dashboard/providers">Node'u aç</Link>
             </div>
-            <div className="notice">Kazandığın kredileri API isteklerinde kullanabilirsin. Kredi bakiyen dahili platform kredisidir, nakde çevrilemez.</div>
-            {ledger.length === 0 ? (
-              <div className="card stack">
-                <Empty label="Henüz hiç kredi hareketi yok." />
-                <div className="muted">İlk API isteğini yaparak harcamayı, node çalıştırarak da kazancı burada görmeye başlarsın.</div>
-                <div className="row">
-                  <Link className="button" href="/dashboard/api-keys">İlk isteği yap</Link>
-                </div>
-              </div>
-            ) : (
-              <div className="stack">
+          </div>
+          <div className="grid stat-strip">
+            <div className="metric"><strong>{wallet?.balance ?? 0}</strong><span className="muted">Harcanabilir</span></div>
+            <div className="metric"><strong>{earned}</strong><span className="muted">Toplam kazanç</span></div>
+            <div className="metric"><strong>{spent}</strong><span className="muted">Toplam kullanım</span></div>
+          </div>
+        </div>
+      </section>
+
+      <CreditNotice />
+      <div className="muted">Bu kredi nakit değildir.</div>
+      {error ? <ErrorMessage error={error} hint="Bakiye bilgisi alınamadı. Sayfayı yenileyip tekrar dene." /> : null}
+      {loading ? <Loading label="Bakiye yükleniyor..." hint="Son hareketlerin hazırlanıyor." /> : null}
+
+      {!loading && !error ? (
+        ledger.length === 0 ? (
+          <div className="card stack">
+            <Empty label="Henüz hareket yok." hint="İlk istek ya da ilk node işi burada görünür." />
+            <div className="row">
+              <Link className="button" href="/dashboard/api-keys">API'yi aç</Link>
+            </div>
+          </div>
+        ) : (
+          <section className="card stack">
+            <div className="surface-head">
+              <div>
                 <h2>Son hareketler</h2>
-                <div className="surface desktop-only">
-                  <table>
-                    <thead><tr><th>Hareket</th><th>Kredi</th><th>Not</th><th>Tarih</th></tr></thead>
-                    <tbody>
-                      {historyRows.map((entry) => (
-                        <tr key={entry.id}>
-                          <td>
-                            <strong>{entry.label}</strong>
-                            <div className="muted">Hareket sonrası bakiye {entry.balance_after}</div>
-                          </td>
-                          <td>{entry.credits}</td>
-                          <td>{entry.note}</td>
-                          <td>{entry.at}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="mobile-only mobile-list">
-                  {historyRows.map((entry) => (
-                    <div key={entry.id} className="mobile-item">
-                      <div className="row">
-                        <strong>{entry.label}</strong>
-                        <span>{entry.credits}</span>
-                      </div>
-                      <div className="meta muted">
-                        <div>{entry.note}</div>
-                        <div>Hareket sonrası bakiye {entry.balance_after}</div>
-                        <div>{entry.at}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <p className="muted">Yeni hareketler üstte görünür.</p>
               </div>
-            )}
-          </>
-        ) : null}
-      </div>
-    </Shell>
+            </div>
+            <div className="surface desktop-only">
+              <table>
+                <thead><tr><th>Hareket</th><th>Kredi</th><th>Açıklama</th><th>Tarih</th></tr></thead>
+                <tbody>
+                  {historyRows.map((entry) => (
+                    <tr key={entry.id}>
+                      <td>
+                        <strong>{entry.label}</strong>
+                        <div className="muted">Hareket sonrası bakiye {entry.balance_after}</div>
+                      </td>
+                      <td>{entry.credits}</td>
+                      <td>{entry.note}</td>
+                      <td>{entry.at}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mobile-only mobile-list">
+              {historyRows.map((entry) => (
+                <div key={entry.id} className="mobile-item">
+                  <div className="row">
+                    <strong>{entry.label}</strong>
+                    <span>{entry.credits}</span>
+                  </div>
+                  <div className="meta muted">
+                    <div>{entry.note}</div>
+                    <div>Hareket sonrası bakiye {entry.balance_after}</div>
+                    <div>{entry.at}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      ) : null}
+    </div>
   );
 }

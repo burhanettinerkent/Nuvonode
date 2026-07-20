@@ -1,22 +1,42 @@
-export function Loading({ label = "Yükleniyor..." }: { label?: string }) {
-  return <div className="notice">{label}</div>;
-}
+type MessageProps = {
+  label?: string;
+  hint?: string;
+};
 
-export function Empty({ label }: { label: string }) {
-  return <div className="notice">{label}</div>;
-}
-
-export function SuccessMessage({ message }: { message: string }) {
-  return <div className="notice"><strong>{message}</strong></div>;
-}
-
-export function ErrorMessage({ error }: { error: unknown }) {
-  const message = error instanceof Error ? error.message : "Bir şey yanlış gitti.";
-  const requestID = typeof error === "object" && error && "requestID" in error ? String(error.requestID) : "";
+export function Loading({ label = "Yükleniyor...", hint }: MessageProps) {
   return (
-    <div className="error">
+    <div className="notice stack compact-notice">
+      <strong>{label}</strong>
+      {hint ? <div className="muted">{hint}</div> : null}
+    </div>
+  );
+}
+
+export function Empty({ label, hint }: { label: string; hint?: string }) {
+  return (
+    <div className="notice stack compact-notice">
+      <strong>{label}</strong>
+      {hint ? <div className="muted">{hint}</div> : null}
+    </div>
+  );
+}
+
+export function SuccessMessage({ message, hint }: { message: string; hint?: string }) {
+  return (
+    <div className="notice stack compact-notice">
       <strong>{message}</strong>
-      {requestID ? <div>İstek kimliği: {requestID}</div> : null}
+      {hint ? <div className="muted">{hint}</div> : null}
+    </div>
+  );
+}
+
+export function ErrorMessage({ error, hint = "Birkaç saniye sonra yeniden dene. Sorun sürerse sayfayı yenile veya tekrar giriş yap." }: { error: unknown; hint?: string }) {
+  const message = error instanceof Error ? error.message : "Bir şey yanlış gitti.";
+
+  return (
+    <div className="error stack compact-notice">
+      <strong>{message}</strong>
+      <div className="muted">{hint}</div>
     </div>
   );
 }

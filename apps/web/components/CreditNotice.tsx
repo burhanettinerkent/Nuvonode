@@ -1,3 +1,3 @@
 export function CreditNotice() {
-  return <div className="notice">Onaylı işler tamamlandığında node'lar kredi kazanır. Kazandığın kredileri model kullanımında harcayabilirsin.</div>;
+  return <div className="notice">Node kazancı da aynı bakiyeye eklenir. API kullanımında harcanır.</div>;
 }
