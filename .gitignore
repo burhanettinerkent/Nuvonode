@@ -28,3 +28,7 @@ __pycache__/
 
 # local provider config if copied into repo
 .nuvonode-provider/
+
+# local design references
+Tasarım/
+Tasarim/
