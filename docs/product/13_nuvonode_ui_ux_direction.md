@@ -245,6 +245,13 @@ Mobile support is required.
 - friendly
 - action-oriented
 - non-technical
+- never sounds like a product spec, consultant deck, or internal design note
+
+### Hard limits
+- hero heading should usually fit in 3-6 words
+- supporting copy should usually fit in 8-16 words
+- one idea per block
+- no repeated explanation of the product story across the same screen
 
 ### Good examples
 - Create your first key
@@ -252,13 +259,41 @@ Mobile support is required.
 - Your node is offline
 - Start a node to earn credits
 - Spend earned credits on model usage
+- Get your API key
+- Run your first request
+- View all requests
 
 ### Bad examples
 - Configure provider runtime advertisement
 - Review wallet ledger movement
 - Inspect moderation metadata
 - Manage control-plane entities
+- This page is the main product area
+- Your requests become proof here
+- Node path is a secondary value layer
+- This flow keeps product, command, and verification in one place
 
+### Copy bans for this project
+Avoid abstract product-language that explains the UI instead of helping the user act.
+Do not use phrases like:
+- akış
+- kanıt
+- ürün merkezi
+- değer katmanı
+- ürün içinde yaşar
+- ilk başarı anı
+- bu yüzey
+- burada iz bırakır
+
+Prefer concrete action language instead:
+- Anahtar oluştur
+- Komutu kopyala
+- İlk isteğini gönder
+- İsteklerini gör
+- Node oluştur
+- Durumu gör
+
+If a sentence sounds like it is explaining the design, strategy, or architecture of the page, rewrite it.
 ## Visual system direction
 
 ### Desired feel

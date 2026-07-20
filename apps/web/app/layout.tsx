@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Nuvonode",
-  description: "Açık modeller için sade API ve node deneyimi",
+  description: "Tek API ile onaylı açık modelleri çağır. İstersen daha sonra node çalıştır ve aynı hesapta kredi kullan.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,8 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { StatusPill } from "@/components/Display";
-import { Shell } from "@/components/Shell";
 import { Empty, ErrorMessage, Loading, SuccessMessage } from "@/components/State";
 import { createAdminModel, listAdminModels, pauseAdminModel, updateAdminModel, type Model, type ModelPayload } from "@/lib/api";
 
@@ -145,10 +144,25 @@ export default function AdminModelsPage() {
     }
   }
 
+  const activeCount = useMemo(() => models.filter((model) => model.status === "active").length, [models]);
+  const pausedCount = useMemo(() => models.filter((model) => model.status === "paused").length, [models]);
+
   return (
-    <Shell>
-      <div className="stack">
-        <h1>Modeller</h1>
+    <div className="stack">
+      <section className="card stack split-panel" style={{ padding: 32 }}>
+        <div className="stack">
+          <span className="eyebrow">Modeller</span>
+          <h1>Katalogu güncel tut.</h1>
+          <p className="muted" style={{ maxWidth: 620 }}>Model oluşturma, duraklatma ve durum düzeltmeleri bu ekrandan yapılır.</p>
+        </div>
+        <div className="grid stat-strip">
+          <div className="metric"><strong>{models.length}</strong><span className="muted">Toplam model</span></div>
+          <div className="metric"><strong>{activeCount}</strong><span className="muted">Aktif model</span></div>
+          <div className="metric"><strong>{pausedCount}</strong><span className="muted">Duraklatılmış</span></div>
+        </div>
+      </section>
+
+      <section className="split-panel">
         <form className="card stack" onSubmit={submit}>
           <h2>Model oluştur</h2>
           <div className="grid">
@@ -168,10 +182,12 @@ export default function AdminModelsPage() {
           </div>
           <div className="field"><label htmlFor="description">Açıklama</label><textarea id="description" value={form.description} onChange={(event) => setField("description", event.target.value)} /></div>
           <div className="field"><label htmlFor="license-notes">Lisans notları</label><textarea id="license-notes" value={form.licenseNotes} onChange={(event) => setField("licenseNotes", event.target.value)} /></div>
-          <label className="row"><input checked={form.communityAllowed} type="checkbox" onChange={(event) => setField("communityAllowed", event.target.checked)} /> Topluluk node'larına izin ver</label>
+          <label className="row"><input checked={form.communityAllowed} type="checkbox" onChange={(event) => setField("communityAllowed", event.target.checked)} /> Topluluk node’larına izin ver</label>
           <button className="button" disabled={saving} type="submit">{saving ? "Oluşturuluyor..." : "Model oluştur"}</button>
         </form>
-        <div className="card row">
+
+        <div className="card stack secondary-card">
+          <h2>Durum düzenle</h2>
           <select value={editingID} onChange={(event) => {
             const id = event.target.value;
             setEditingID(id);
@@ -185,18 +201,22 @@ export default function AdminModelsPage() {
           </select>
           <button className="button secondary" disabled={!editingID} type="button" onClick={saveStatus}>Durumu güncelle</button>
         </div>
-        {error ? <ErrorMessage error={error} /> : null}
-        {success ? <SuccessMessage message={success} /> : null}
-        {loading ? <Loading label="Modeller yükleniyor..." /> : null}
-        {!loading && models.length === 0 ? <Empty label="Henüz model yok." /> : null}
-        {models.length > 0 ? (
-          <div className="surface">
+      </section>
+
+      {error ? <ErrorMessage error={error} hint="Model işlemi yapılamadı. Alanları kontrol edip tekrar dene." /> : null}
+      {success ? <SuccessMessage message={success} /> : null}
+      {loading ? <Loading label="Modeller yükleniyor..." hint="Katalog hazırlanıyor." /> : null}
+      {!loading && models.length === 0 ? <Empty label="Henüz model yok." hint="İlk model burada görünür." /> : null}
+
+      {models.length > 0 ? (
+        <section className="card stack">
+          <div className="surface desktop-only">
             <table>
               <thead><tr><th>Model</th><th>Durum</th><th>Aile</th><th>Bağlam</th><th>Kredi / 1K</th><th>Pay</th><th>VRAM</th><th>Topluluk</th><th>Lisans</th><th>İşlem</th></tr></thead>
               <tbody>
                 {models.map((model) => (
                   <tr key={model.id}>
-                    <td><strong>{model.display_name}</strong><div className="muted">{model.slug}</div><div>{model.description}</div><div className="muted">{model.id}</div></td>
+                    <td><strong>{model.display_name}</strong><div className="muted">{model.slug}</div><div>{model.description}</div><div className="muted">id {model.id}</div></td>
                     <td><StatusPill value={model.status} /></td>
                     <td>{model.family}<div className="muted">{model.modality}</div></td>
                     <td>{model.context_length}<div className="muted">varsayılan çıktı {model.default_max_output_tokens}</div></td>
@@ -211,8 +231,34 @@ export default function AdminModelsPage() {
               </tbody>
             </table>
           </div>
-        ) : null}
-      </div>
-    </Shell>
+          <div className="mobile-only mobile-list">
+            {models.map((model) => (
+              <div key={model.id} className="mobile-item">
+                <div className="row">
+                  <strong>{model.display_name}</strong>
+                  <StatusPill value={model.status} />
+                </div>
+                <div className="meta muted">
+                  <div>{model.slug}</div>
+                  <div>{model.family} / {model.modality}</div>
+                  <div>bağlam {model.context_length}</div>
+                  <div>çıktı {model.default_max_output_tokens}</div>
+                  <div>giriş {model.input_credit_per_1k} / çıkış {model.output_credit_per_1k}</div>
+                  <div>pay {model.provider_reward_ratio}</div>
+                  <div>VRAM {model.min_vram_mb} / {model.recommended_vram_mb} MB</div>
+                  <div>lisans {model.license_name}</div>
+                  <div>{model.license_notes || model.license_url || "—"}</div>
+                  <div>id {model.id}</div>
+                </div>
+                <div className="row">
+                  <StatusPill value={model.community_allowed ? "community_allowed" : "community_blocked"} />
+                  {model.status !== "paused" ? <button className="button secondary" type="button" onClick={() => pause(model.id)}>Duraklat</button> : <span className="pill warn">Duraklatıldı</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+    </div>
   );
 }

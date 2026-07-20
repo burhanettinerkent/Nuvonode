@@ -1,3 +1,3 @@
 export function PrivacyNotice() {
-  return <div className="notice warn">Topluluk tarafından yönlendirilen istekler topluluk node'larında işlenebilir. Hassas veri gönderme.</div>;
+  return <div className="notice warn">Topluluk node'larına yönlendirilen istekler topluluk makinelerinde işlenebilir. Hassas veri gönderme.</div>;
 }
